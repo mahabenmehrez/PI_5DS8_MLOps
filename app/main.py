@@ -72,7 +72,7 @@ app.mount("/metrics", metrics_app)
 async def lifespan(app: FastAPI):
     global loaded_model
     MODEL_ID = "81016038b59b4414921424a53061c62c"
-    logged_model = f"runs:/{MODEL_ID}/model"
+    logged_model = "models:/wine-quality@champion"
 
     # Load the model once at startup
     loaded_model = mlflow.pyfunc.load_model(logged_model)
