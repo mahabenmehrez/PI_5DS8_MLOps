@@ -1,0 +1,15 @@
+# Scenario C: the feed sends total sulfur dioxide in g/dm3 instead of mg/dm3
+id: data.unit_change.total_sulfur_dioxide
+layer: data
+author: P3
+target: {column: total sulfur dioxide, factor: 0.001}   # mg/dm3 -> g/dm3
+start: {after_batches: 10}
+duration: {batches: 3}
+applies_to: [batch, requests]
+inject: harness.faults.data:rescale_column
+revert: harness.faults.data:restore_column
+expected:
+  owner: checker
+  root_cause_node: "feature:total_sulfur_dioxide"
+  acceptable_actions: [quarantine, repair]
+  must_not: [request.retrain, promote_100]

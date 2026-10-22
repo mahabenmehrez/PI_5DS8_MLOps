@@ -1,0 +1,15 @@
+# A new column appears; the model does not use it, so it is a warning only
+id: data.new_column
+layer: data
+author: P3
+target: {column: vintage_year, value: 2024}
+start: {after_batches: 10}
+duration: {batches: 1}
+applies_to: [batch]
+inject: harness.faults.data:add_column
+revert: harness.faults.data:restore_column
+expected:
+  owner: checker
+  root_cause_node: "dataset"
+  acceptable_actions: [pass_with_warning, pass]
+  must_not: [quarantine, request.retrain]

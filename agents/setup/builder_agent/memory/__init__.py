@@ -1,0 +1,191 @@
+"""Fix memory for RAG: past failures with their verified fixes, retrieved for the diagnosis prompt.
+
+    from builder_agent.memory import FixMemory
+    memory = FixMemory.build(OllamaEmbedder())
+    hits = memory.advanced(stage, error_tail)          # or memory.naive(error_tail)
+    text = render_retrieved(hits)                      # -> {{ retrieved_text }} in prompts/diagnose_v3.md
+
+Documents: the generated cases with split "memory" plus fault-001 (tests/faults/). A case with
+split "test" is never indexed (MemoryCaseError). Each document holds the failed stage, the error
+signature, the cause and the verified expected fix. The index lives in memory (a numpy matrix,
+embeddings computed through the embedder); nothing is written to disk.
+
+Two retrievers, top 3:
+- naive: the full error tail as the query, vectors only;
+- advanced: the error signature as the query, BM25 + vectors merged with reciprocal rank fusion,
+  plus a boost (not a filter) for documents from the same stage.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+import numpy as np
+from pydantic import BaseModel
+from rank_bm25 import BM25Okapi
+
+from ..faults import error_signature
+from ..fix.models import Diagnosis, describe
+
+FAULTS_DIR = Path(__file__).resolve().parents[2] / "tests" / "faults"
+TOP_K = 3
+RRF_K = 60                              # reciprocal rank fusion: score = sum of 1 / (RRF_K + rank)
+STAGE_BOOST = 0.5 / (RRF_K + 1)         # same stage: worth half a first place in one ranking
+
+
+class MemoryCaseError(ValueError):
+    pass
+
+
+class MemoryDoc(BaseModel):
+    id: str                 # fault-001, gen-002, ...
+    family: str | None      # generated cases only
+    variant: str
+    stage: str
+    error: str              # the error signature
+    cause: str
+    fix: dict               # the verified expected fix (a menu action)
+
+    @property
+    def fix_text(self) -> str:
+        try:
+            return describe(Diagnosis.model_validate({"fix": self.fix, "reason": "x"}).fix)
+        except ValueError:                       # a team-menu action (fix_path, change_entry_command)
+            return " ".join(str(v) for v in self.fix.values())
+
+    def text(self) -> str:
+        return f"stage: {self.stage}\nerror: {self.error}\ncause: {self.cause}\nfix: {self.fix_text}"
+
+
+class Hit(BaseModel):
+    doc: MemoryDoc
+    score: float
+    ranks: dict[str, int | None]        # rank in each list (1 = best), None if not ranked
+
+
+def doc_from_case(case: dict, allow_test: bool = False) -> MemoryDoc:
+    """allow_test: only for the leave-one-out memory (loo_docs), where a test case is indexed for the
+    other cases, never for itself (docs/EVAL_PROTOCOL.md, Decisions 1)."""
+    if case.get("split") == "test" and not allow_test:
+        raise MemoryCaseError(f"{case['id']} ({case.get('variant')}) is a held-out test case; "
+                              "test cases are never indexed")
+    if "expected_fix" not in case:
+        raise MemoryCaseError(f"{case['id']} has no expected_fix")
+    return MemoryDoc(id=case["id"], family=case.get("family"), variant=case.get("variant", case["name"]),
+                     stage=case["stage"], error=case["error_signature"], cause=case["cause"]["summary"],
+                     fix=case["expected_fix"])
+
+
+def memory_cases(faults_dir: str | Path = FAULTS_DIR) -> list[dict]:
+    """fault-001 plus the generated cases with split "memory"."""
+    faults_dir = Path(faults_dir)
+    load = lambda p: json.loads(p.read_text(encoding="utf-8"))  # noqa: E731
+    hand = [c for c in map(load, sorted(faults_dir.glob("*/case.json"))) if c["id"] == "fault-001"]
+    generated = [c for c in map(load, sorted((faults_dir / "generated").glob("*/case.json")))
+                 if c.get("split") == "memory"]
+    return hand + generated
+
+
+# the same fault recorded twice: leave-one-out leaves both out (docs/EVAL_PROTOCOL.md section 1)
+TWINS = {"gen-008": {"fault-001"}, "fault-001": {"gen-008"}}
+
+
+def all_cases(faults_dir: str | Path = FAULTS_DIR) -> list[dict]:
+    """fault-001 plus every generated case, whatever its split: the 14 cases of the leave-one-out evaluation."""
+    faults_dir = Path(faults_dir)
+    load = lambda p: json.loads(p.read_text(encoding="utf-8"))  # noqa: E731
+    hand = [c for c in map(load, sorted(faults_dir.glob("*/case.json"))) if c["id"] == "fault-001"]
+    return hand + sorted(map(load, (faults_dir / "generated").glob("*/case.json")), key=lambda c: c["id"])
+
+
+def loo_docs(case_id: str, faults_dir: str | Path = FAULTS_DIR) -> list[MemoryDoc]:
+    """Leave-one-out memory for one case: every other case, minus its twin. Built from the case files
+    only (never memory/learned/); test cases included, as Decisions 1 of the protocol allows."""
+    cases = all_cases(faults_dir)
+    if case_id not in {c["id"] for c in cases}:
+        raise MemoryCaseError(f"{case_id} is not one of the {len(cases)} cases")
+    excluded = {case_id} | TWINS.get(case_id, set())
+    return [doc_from_case(c, allow_test=True) for c in cases if c["id"] not in excluded]
+
+
+def _unit(m):
+    """Rows scaled to length 1, so a dot product is the cosine similarity."""
+    norms = np.linalg.norm(m, axis=1, keepdims=True)
+    return m / np.where(norms == 0, 1, norms)
+
+
+def tokens(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9_]+(?:\.[a-z0-9_]+)*", text.lower())
+
+
+class FixMemory:
+    def __init__(self, docs: list[MemoryDoc], embedder, keywords_if_unreachable: bool = False):
+        self.docs = {d.id: d for d in docs}
+        self.embedder = embedder
+        self._order = [d.id for d in docs]
+        # exact cosine similarity over a small in-memory matrix (numpy): no vector database to install, and no
+        # protobuf conflict with MLflow in the team's shared image. embedder=None: keyword (BM25) search only.
+        self._vectors = None
+        if embedder is not None and docs:
+            try:
+                self._vectors = _unit(np.asarray(embedder.embed([d.text() for d in docs], kind="document"), dtype=float))
+            except Exception as e:  # noqa: BLE001 - an unreachable embedding service
+                if not keywords_if_unreachable:
+                    raise                        # evaluations must not silently change retriever
+                print(f"[memory] embeddings unavailable ({type(e).__name__}: {e}); keyword search only")
+                self.embedder = None
+        self.bm25 = BM25Okapi([tokens(d.text()) for d in docs])
+
+    @classmethod
+    def build(cls, embedder, cases: list[dict] | None = None, docs: list[MemoryDoc] | None = None,
+              keywords_if_unreachable: bool = False) -> FixMemory:
+        """docs: ready documents (memory/learned.py memory_docs); else cases, else the base memory cases."""
+        if docs is not None:
+            return cls(docs, embedder, keywords_if_unreachable)
+        return cls([doc_from_case(c) for c in (memory_cases() if cases is None else cases)], embedder,
+                   keywords_if_unreachable)
+
+    def _vector_ranking(self, query: str) -> list[tuple[str, float]]:
+        if self._vectors is None:
+            return []
+        q = _unit(np.asarray(self.embedder.embed([query], kind="query"), dtype=float))[0]
+        sims = self._vectors @ q                                             # cosine similarity
+        order = sorted(range(len(self._order)), key=lambda n: -sims[n])    # stable: ties keep memory order
+        return [(self._order[n], float(sims[n])) for n in order]
+
+    def naive(self, error_tail: list[str] | str, k: int = TOP_K) -> list[Hit]:
+        query = error_tail if isinstance(error_tail, str) else "\n".join(error_tail)
+        ranked = self._vector_ranking(query)
+        return [Hit(doc=self.docs[i], score=round(s, 4), ranks={"vector": n})
+                for n, (i, s) in enumerate(ranked[:k], 1)]
+
+    def advanced(self, stage: str, error_tail: list[str] | str, k: int = TOP_K) -> list[Hit]:
+        signature = error_signature(error_tail if isinstance(error_tail, list) else error_tail.splitlines())
+        vector = [i for i, _ in self._vector_ranking(signature)]          # [] without an embedder
+        bm = self.bm25.get_scores(tokens(signature))
+        bm25 = [i for _, i in sorted(zip(bm, self._order), key=lambda t: -t[0])]
+        hits = []
+        for i, doc in self.docs.items():
+            ranks = {"bm25": bm25.index(i) + 1} | ({"vector": vector.index(i) + 1} if vector else {})
+            score = sum(1 / (RRF_K + r) for r in ranks.values()) + (STAGE_BOOST if doc.stage == stage else 0)
+            hits.append(Hit(doc=doc, score=round(score, 5), ranks=ranks))
+        return sorted(hits, key=lambda h: -h.score)[:k]
+
+
+def render_retrieved(hits: list[Hit]) -> str:
+    """The text for {{ retrieved_text }}: each case with its stage, error line, cause and fix."""
+    if not hits:
+        return "none"
+    return "\n".join(f"{n}. stage: {h.doc.stage}\n   error: {h.doc.error}\n   cause: {h.doc.cause}\n"
+                     f"   verified fix: {h.doc.fix_text}" for n, h in enumerate(hits, 1))
+
+
+def retriever(memory: FixMemory, kind: str):
+    """A function (stage, error_tail) -> hits for the fix loop."""
+    if kind == "naive":
+        return lambda stage, tail: memory.naive(tail)
+    if kind == "advanced":
+        return lambda stage, tail: memory.advanced(stage, tail)
+    raise ValueError(f"unknown retriever {kind!r}: naive or advanced")

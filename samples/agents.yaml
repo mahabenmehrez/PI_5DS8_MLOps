@@ -1,0 +1,55 @@
+# samples/agents.yaml: hand-made sample of the one config every agent reads (roadmap 5.13). Owner: P1 (Setup Agent).
+# The Setup Agent generates the real agents.yaml in week 3; it must keep this shape and these keys.
+# Feature names use underscores everywhere (topics are feature:<name>). The raw CSV uses spaces and ";":
+# samples/schema.py normalize_columns() maps one to the other.
+run_id: dev
+db_url: sqlite:///board.db
+clock: {mode: replay, speed: 720}            # 1 real second = 12 simulated minutes
+llm:
+  provider: api                              # api | ollama (roadmap 5.9: a config switch)
+  base_url: https://integrate.api.nvidia.com/v1
+  model: google/gemma-4-31b-it
+  temperature: 0
+  api_key_env: NVIDIA_API_KEY                # the key itself lives in .env, never in git
+mlflow: {tracking_uri: "http://localhost:5000", model_name: wine-quality}
+api: {url: "http://localhost:8000", metrics: "http://localhost:8000/metrics"}
+prometheus: {url: "http://localhost:9090"}
+labels: {delay: 1d}
+batch_size: 100
+data: {path: data/winequality-red.csv, separator: ";", target: quality}
+schema_path: samples/schema.py
+dependency_map: samples/dependency_map.yaml
+features: [fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides,
+           free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]
+units:
+  fixed_acidity: g/dm3                       # tartaric acid
+  volatile_acidity: g/dm3                    # acetic acid
+  citric_acid: g/dm3
+  residual_sugar: g/dm3
+  chlorides: g/dm3                           # sodium chloride
+  free_sulfur_dioxide: mg/dm3
+  total_sulfur_dioxide: mg/dm3
+  density: g/cm3
+  pH: pH
+  sulphates: g/dm3                           # potassium sulphate
+  alcohol: "% vol"
+groups: [alcohol_band, acidity_band, quality_band]
+agents:
+  setup:
+    subscriptions: ["pipeline:*"]
+    thresholds: {max_fix_attempts: 3, dry_run_sample_rows: 600, dry_run_timeout_s: 600}
+  reviewer:
+    subscriptions: ["code:*", "feature:*"]
+    thresholds: {risk_block_threshold: 0.50, skew_ratio_tolerance: 0.05}
+  checker:
+    subscriptions: ["dataset:*", "feature:*", "expected_change:*"]
+    thresholds: {psi_warn: 0.10, psi_alert: 0.25}
+  trainer:
+    subscriptions: ["dataset:*", "model:*", "expected_change:*"]
+    thresholds: {min_gain_pct: 2, max_group_worse_pct: 5, retrain_every_batches: 10}
+  deployer:
+    subscriptions: ["model:*", "deployment:*", "expected_change:*"]
+    thresholds: {p95_ms: 300, error_rate: 0.05}
+  monitor:
+    subscriptions: ["feature:*", "model:*", "deployment:*", "expected_change:*"]
+    thresholds: {mae_rise_pct: 10, windows: 3, weighted_psi: 0.2}

@@ -1,0 +1,46 @@
+{
+  "id": "msg-2b9e44d0c7a5",
+  "time": "2026-03-15T09:10:00Z",
+  "type": "finding",
+  "kind": "training.decision",
+  "sender": "trainer",
+  "to": [
+    "monitor"
+  ],
+  "topic": "model:wine-quality",
+  "incident_id": "inc-9c03d1e8",
+  "reply_to": null,
+  "level": 2,
+  "confidence": 0.74,
+  "summary": "Retraining on the last 10 clean batches: live error (MAE) went up 18%, retraining should lower it by 6.5%",
+  "evidence": {
+    "weighted_psi": 0.03,
+    "mae_rise_pct": 18.0,
+    "new_rows": 1000
+  },
+  "payload": {
+    "decision": "retrain",
+    "expected_gain": 6.5,
+    "threshold": 2.0,
+    "data_window": {
+      "start": "batch-0021",
+      "end": "batch-0030",
+      "batch_ids": [
+        "batch-0021",
+        "batch-0022",
+        "batch-0023",
+        "batch-0024",
+        "batch-0025",
+        "batch-0026",
+        "batch-0027",
+        "batch-0028",
+        "batch-0029",
+        "batch-0030"
+      ]
+    },
+    "reason_code": "label_mae_rise"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

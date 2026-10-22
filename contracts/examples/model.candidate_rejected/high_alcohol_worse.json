@@ -1,0 +1,43 @@
+{
+  "id": "msg-5d0f8a6e13b2",
+  "time": "2026-03-15T09:40:00Z",
+  "type": "finding",
+  "kind": "model.candidate_rejected",
+  "sender": "trainer",
+  "to": [
+    "monitor",
+    "human"
+  ],
+  "topic": "model:wine-quality@2",
+  "incident_id": "inc-9c03d1e8",
+  "reply_to": null,
+  "level": 1,
+  "confidence": 0.9,
+  "summary": "Candidate v2 rejected: error (MAE) 3.1% lower overall but 9.4% higher for alcohol_band >11.5",
+  "evidence": {
+    "mae_live": 0.502,
+    "mae_candidate": 0.486,
+    "bootstrap_resamples": 500
+  },
+  "payload": {
+    "version": "2",
+    "overall_delta": -0.031,
+    "failing_groups": [
+      {
+        "group": "alcohol_band",
+        "band": ">11.5",
+        "n": 68,
+        "mae_live": 0.58,
+        "mae_candidate": 0.635,
+        "delta_ci95": [
+          0.018,
+          0.097
+        ],
+        "limit": 0.029
+      }
+    ]
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

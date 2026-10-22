@@ -1,0 +1,14 @@
+id: model.group_damage.high_alcohol_missing
+layer: model
+author: P4
+target: {alcohol_gt: 11.5}                                # high-alcohol wines missing from the training window
+start: {after_batches: 0}
+duration: {batches: 35}                                   # the newest batches (evaluation) still have them
+applies_to: [batch]
+inject: harness.faults.model:drop_rows
+revert: harness.faults.model:restore
+expected:
+  owner: trainer
+  root_cause_node: "dataset:window"
+  acceptable_actions: [reject_candidate]
+  must_not: [request.deploy_candidate]

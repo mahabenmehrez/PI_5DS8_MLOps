@@ -1,0 +1,39 @@
+{
+  "id": "msg-c7d8e9f01234",
+  "time": "2026-10-13T12:05:00Z",
+  "type": "request",
+  "kind": "request.expected_change",
+  "sender": "reviewer",
+  "to": ["checker", "monitor", "trainer", "deployer"],
+  "topic": "expected_change:exp-chg-001",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 3,
+  "confidence": 1.0,
+  "summary": "Initiating migration for unit change on total_sulfur_dioxide (mg/dm3 -> g/dm3)",
+  "evidence": {
+    "intent_tag": "total_sulfur_dioxide mg -> g",
+    "measured_ratio": 0.001
+  },
+  "payload": {
+    "change_id": "exp-chg-001",
+    "commit": "8f3e21c",
+    "changes": [
+      {
+        "name": "total_sulfur_dioxide",
+        "old": "mg/dm3",
+        "new": "g/dm3",
+        "factor": 0.001
+      }
+    ],
+    "tasks": {
+      "checker": "update_schema_to_g_per_dm3",
+      "monitor": "mute_alerts_for_total_sulfur_dioxide",
+      "trainer": "retrain_on_post_change_data",
+      "deployer": "hold_releases_until_candidate_ready"
+    }
+  },
+  "status": "open",
+  "expires_at": "2026-10-13T13:05:00Z",
+  "run_id": "dev"
+}

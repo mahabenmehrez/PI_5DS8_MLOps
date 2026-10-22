@@ -1,0 +1,15 @@
+fastapi==0.115.0
+uvicorn==0.30.6
+boto3==1.34.131
+# same versions as the MLflow server and the training code (requirements-agents.txt),
+# so the pickled sklearn model loads without surprises
+mlflow==2.14.1
+setuptools==69.5.1
+scikit-learn==1.5.1
+numpy==1.26.4
+scipy==1.13.1
+pandas==2.2.3
+prometheus_client==0.19.0
+prometheus_fastapi_instrumentator==7.0.0
+psutil==5.9.7
+pydantic==2.9.2

@@ -1,0 +1,24 @@
+{
+  "id": "msg-762b02ca3a39",
+  "time": "2026-03-14T11:00:00Z",
+  "type": "request",
+  "kind": "request.hold",
+  "sender": "checker",
+  "to": [
+    "deployer"
+  ],
+  "topic": "deployment:prod",
+  "incident_id": "inc-48ca07d3",
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Hold releases: unit_change on feature:total_sulfur_dioxide in batch batch-0011",
+  "evidence": {},
+  "payload": {
+    "reason": "unit_change on feature:total_sulfur_dioxide in batch batch-0011",
+    "release_condition": "new batches pass schema and unit checks"
+  },
+  "status": "answered",
+  "expires_at": "2026-03-14T12:00:00Z",
+  "run_id": "dev"
+}

@@ -1,0 +1,127 @@
+[
+ {
+  "id": "gen-010",
+  "family": "incompatible_pin",
+  "relevant": [
+   "gen-003",
+   "gen-009"
+  ],
+  "query": "serving-current-1  | ImportError: cannot import name 'url_quote' from 'werkzeug.urls' (/usr/local/lib/python3.9/site-packages/werkzeug/urls.py)",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.29,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.024,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "action": "incorrect",
+  "all_scores": {
+   "gen-006": 0.29,
+   "gen-002": 0.024,
+   "gen-012": 0.016,
+   "gen-005": 0.016,
+   "gen-009": 0.0,
+   "gen-008": 0.0,
+   "gen-007": 0.0,
+   "gen-004": 0.0,
+   "gen-003": 0.0,
+   "fault-001": 0.0
+  }
+ },
+ {
+  "id": "gen-011",
+  "family": "python_version",
+  "relevant": [
+   "gen-004"
+  ],
+  "query": "error: metadata-generation-failed",
+  "top3": [
+   {
+    "id": "gen-009",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-004",
+    "score": 0.0,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "fault-001",
+    "score": 0.107,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "action": "incorrect",
+  "all_scores": {
+   "fault-001": 0.107,
+   "gen-012": 0.06,
+   "gen-005": 0.06,
+   "gen-007": 0.054,
+   "gen-008": 0.048,
+   "gen-009": 0.0,
+   "gen-006": 0.0,
+   "gen-004": 0.0,
+   "gen-003": 0.0,
+   "gen-002": 0.0
+  }
+ },
+ {
+  "id": "gen-013",
+  "family": "env_var",
+  "relevant": [
+   "gen-005",
+   "gen-012"
+  ],
+  "query": "mlflow.exceptions.MlflowException: Run 'c755d485cbcd4b2eb93d599c0fb91aec' not found",
+  "top3": [
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-009",
+    "score": 0.033,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-012",
+    "score": 0.558,
+    "kept": true,
+    "relevant": true
+   }
+  ],
+  "action": "ambiguous",
+  "all_scores": {
+   "gen-012": 0.558,
+   "gen-005": 0.558,
+   "gen-007": 0.552,
+   "gen-008": 0.547,
+   "gen-009": 0.033,
+   "fault-001": 0.029,
+   "gen-006": 0.0,
+   "gen-004": 0.0,
+   "gen-003": 0.0,
+   "gen-002": 0.0
+  }
+ }
+]

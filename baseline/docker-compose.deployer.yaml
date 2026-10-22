@@ -1,0 +1,10 @@
+# Complement du compose pour le Deployer : partage la base board.db entre l'API et l'agent.
+# Usage (depuis le dossier baseline) :
+#   docker compose -f docker-compose.fixed.yaml -f docker-compose.deployer.yaml up -d --build
+services:
+  app:
+    environment:
+      - BOARD_DB=/board/board.db
+      - SQLITE_JOURNAL=DELETE      # le mode WAL fonctionne mal sur un dossier partage Windows/Linux
+    volumes:
+      - ../board:/board            # dossier "board" a la racine du depot (ignore par Git)

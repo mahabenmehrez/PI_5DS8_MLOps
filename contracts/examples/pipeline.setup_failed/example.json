@@ -1,0 +1,28 @@
+{
+  "id": "msg-5e7a1c2b9d02",
+  "time": "2026-10-16T18:00:00+00:00",
+  "type": "finding",
+  "kind": "pipeline.setup_failed",
+  "sender": "setup",
+  "to": [
+    "human"
+  ],
+  "topic": "pipeline:setup",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 1,
+  "confidence": 1.0,
+  "summary": "Stub: setup failed at build (ResolutionImpossible) after 3 fixes",
+  "evidence": {
+    "attempts": 3
+  },
+  "payload": {
+    "stage": "build",
+    "error_class": "ResolutionImpossible",
+    "attempts": 3,
+    "log_ref": "logs/setup/sample-failed.log"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

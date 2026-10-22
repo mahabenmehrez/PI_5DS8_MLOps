@@ -1,0 +1,31 @@
+{
+  "id": "msg-0ac36aa520d4",
+  "time": "2026-03-14T12:00:00Z",
+  "type": "answer",
+  "kind": "query.data_changed",
+  "sender": "checker",
+  "to": [
+    "monitor"
+  ],
+  "topic": "feature:total_sulfur_dioxide",
+  "incident_id": "inc-48ca07d3",
+  "reply_to": "msg-15a8921a2469",
+  "level": 1,
+  "confidence": 0.9,
+  "summary": "Yes: unit_change on total sulfur dioxide in batch-0011",
+  "evidence": {
+    "median_ratio_vs_before": 1.0793,
+    "window_batches": 3,
+    "batches_before": 5
+  },
+  "payload": {
+    "changed": true,
+    "batch_ids": [
+      "batch-0011"
+    ],
+    "likely_cause": "unit_change"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

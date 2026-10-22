@@ -1,0 +1,101 @@
+# samples/dependency_map.yaml
+# Baseline graph linking code -> feature -> dataset -> model -> deployment
+
+owners:
+  code:baseline/app/main.py: reviewer
+  code:baseline/train.py: reviewer
+  feature:fixed_acidity: reviewer
+  feature:volatile_acidity: reviewer
+  feature:citric_acid: reviewer
+  feature:residual_sugar: reviewer
+  feature:chlorides: reviewer
+  feature:free_sulfur_dioxide: reviewer
+  feature:total_sulfur_dioxide: reviewer
+  feature:density: reviewer
+  feature:pH: reviewer
+  feature:sulphates: reviewer
+  feature:alcohol: reviewer
+  dataset:batch-0001: checker
+  model:wine-quality@1: trainer
+  deployment:prod: deployer
+
+links:
+  # Code computes Features
+  - src: code:baseline/app/main.py
+    dst: feature:fixed_acidity
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:volatile_acidity
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:citric_acid
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:residual_sugar
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:chlorides
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:free_sulfur_dioxide
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:total_sulfur_dioxide
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:density
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:pH
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:sulphates
+    relation: computes
+  - src: code:baseline/app/main.py
+    dst: feature:alcohol
+    relation: computes
+
+  # Features belong to Dataset columns
+  - src: feature:fixed_acidity
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:volatile_acidity
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:citric_acid
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:residual_sugar
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:chlorides
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:free_sulfur_dioxide
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:total_sulfur_dioxide
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:density
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:pH
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:sulphates
+    dst: dataset:batch-0001
+    relation: column_of
+  - src: feature:alcohol
+    dst: dataset:batch-0001
+    relation: column_of
+
+  # Dataset trains Model
+  - src: dataset:batch-0001
+    dst: model:wine-quality@1
+    relation: trained_on
+
+  # Model serves Deployment
+  - src: model:wine-quality@1
+    dst: deployment:prod
+    relation: serves

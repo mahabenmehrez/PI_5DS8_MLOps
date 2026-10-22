@@ -1,0 +1,12 @@
+# Setup Agent (P1): packages on top of the team's requirements.txt (roadmap 5.3).
+# No vector database: the fix memory ranks with numpy cosine + BM25 (Chroma conflicts with MLflow's protobuf).
+jinja2>=3.1
+pyflakes>=3
+packaging>=23
+pyyaml>=6
+pydantic>=2
+numpy
+rank-bm25==0.2.2
+tomli>=2; python_version < "3.11"
+pandera
+pandas

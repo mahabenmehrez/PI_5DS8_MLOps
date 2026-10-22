@@ -1,0 +1,14 @@
+id: model.bad_candidate.corrupted_window
+layer: model
+author: P4
+target: {seed: 7}                                         # labels shuffled inside each batch of the window
+start: {after_batches: 15}
+duration: {batches: 20}
+applies_to: [labels]
+inject: harness.faults.model:shuffle_labels
+revert: harness.faults.model:restore
+expected:
+  owner: trainer
+  root_cause_node: "dataset:window"
+  acceptable_actions: [reject_candidate, refuse]
+  must_not: [request.deploy_candidate]

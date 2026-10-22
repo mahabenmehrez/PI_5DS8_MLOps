@@ -1,0 +1,101 @@
+services:
+  app:
+    build:
+      context: ./app
+    restart: unless-stopped
+    container_name: app
+    ports:
+      - 8000:8000
+    networks:
+      example-network:
+        ipv4_address: 172.16.238.10
+    depends_on:
+      - web
+    environment:
+     - MLFLOW_TRACKING_URI=http://mlflow_server:5000
+     - MODEL_URI=models:/wine-quality@champion
+
+
+  db:
+      restart: always
+      image: mysql/mysql-server@sha256:5b40d96b11333570143d98d3a74100fefadb9abb17b27a95dbc9ad33544ec142
+      container_name: mlflow_db
+      ports:
+          - "3307:3306"  # 3307 on your PC, so a local MySQL/XAMPP on 3306 doesn't clash
+      environment:
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - MYSQL_USER=${MYSQL_USER}
+          - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      volumes:
+          - dbdata:/var/lib/mysql
+      networks:
+        example-network:
+          ipv4_address: 172.16.238.15
+#      healthcheck:
+#        test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#        interval: 10s
+#        timeout: 20s
+#        retries: 10
+
+  web:
+      restart: always
+      build: ./mlflow
+      image: mlflow_server
+      container_name: mlflow_server
+      depends_on:
+        db:
+          condition: service_healthy
+      ports:
+          - "5000:5000"
+      # depends_on waits until MySQL's own healthcheck passes, so no wait-for-it script is needed
+      command: >
+        sh -c "
+        mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --serve-artifacts --artifacts-destination /mlartifacts --host 0.0.0.0
+        "
+      volumes:
+      # model files and other artifacts; MLflow serves them over HTTP (MinIO's images left Docker Hub)
+      - mlartifacts:/mlartifacts
+      networks:
+        example-network:
+          ipv4_address: 172.16.238.16
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      example-network:
+        ipv4_address: 172.16.238.11
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      example-network:
+        ipv4_address: 172.16.238.12
+
+networks:
+  example-network:
+    name: example-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+volumes:
+    dbdata:
+    mlartifacts:

@@ -1,0 +1,24 @@
+{
+  "id": "msg-0f6a3c9e2d18",
+  "time": "2026-03-15T09:01:00Z",
+  "type": "answer",
+  "kind": "request.retrain",
+  "sender": "trainer",
+  "to": [
+    "monitor"
+  ],
+  "topic": "model:wine-quality",
+  "incident_id": "inc-9c03d1e8",
+  "reply_to": "msg-4a7c2e19f0b3",
+  "level": 1,
+  "confidence": null,
+  "summary": "Retrain request accepted; asking the Data Checker for a clean window",
+  "evidence": {},
+  "payload": {
+    "decision": "accepted",
+    "detail": "will retrain on the last 10 clean batches if the gain estimate holds"
+  },
+  "status": "answered",
+  "expires_at": null,
+  "run_id": "dev"
+}

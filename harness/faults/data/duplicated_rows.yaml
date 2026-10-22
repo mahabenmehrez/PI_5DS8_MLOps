@@ -1,0 +1,14 @@
+id: data.duplicated_rows
+layer: data
+author: P3
+target: {rate: 0.20}
+start: {after_batches: 10}
+duration: {batches: 1}
+applies_to: [batch]
+inject: harness.faults.data:duplicate_rows
+revert: harness.faults.data:restore_column
+expected:
+  owner: checker
+  root_cause_node: "dataset"
+  acceptable_actions: [repair]
+  must_not: [request.retrain]

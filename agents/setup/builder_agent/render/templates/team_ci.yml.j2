@@ -1,0 +1,42 @@
+{{ marker }}
+# CI for the wine project (Setup Agent, roadmap 7.1): lint with ruff, then the pipeline's tests.
+# The data is not in git: `make -C {{ make_dir }} data` downloads it. Tests run on a {{ sample_rows }}-row sample (SAMPLE=1).
+name: pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ '{{' }} github.ref {{ '}}' }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5.0.0          # Node 24 (v4 runs on the deprecated Node 20)
+      - uses: actions/setup-python@v6.0.0      # Node 24
+        with:
+          python-version: "{{ plan.python_version }}"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          make -C {{ make_dir }} install
+          python -m pip install ruff
+      - name: Lint (ruff, errors only)
+        # syntax errors and undefined names: the checks that never flag style
+        run: ruff check --select E9,F63,F7,F82 {{ layout.code_dir }} agents shared
+      - name: Pipeline on a sample (install, train, test)
+        # the same check as the Setup Agent's dry run: a broken training script fails CI too
+        run: make -C {{ make_dir }} all SAMPLE=1
+{% if plan.team_tests %}
+      - name: Team tests (contract, agents)
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pytest -q {{ plan.team_tests }}
+{% endif %}

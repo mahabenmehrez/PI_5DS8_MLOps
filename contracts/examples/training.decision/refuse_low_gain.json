@@ -1,0 +1,55 @@
+{
+  "id": "msg-7a1c0e3b9d21",
+  "time": "2026-03-14T12:05:00Z",
+  "type": "finding",
+  "kind": "training.decision",
+  "sender": "trainer",
+  "to": [
+    "monitor"
+  ],
+  "topic": "model:wine-quality",
+  "incident_id": "inc-1e6f40c2",
+  "reply_to": null,
+  "level": 1,
+  "confidence": 0.8,
+  "summary": "Retrain refused: retraining would lower the error (MAE) by only 0.6%, less than the 2% needed (drift only on residual_sugar)",
+  "evidence": {
+    "weighted_psi": 0.004,
+    "mae_rise_pct": 0.0,
+    "new_rows": 300,
+    "psi": {
+      "residual_sugar": 0.41
+    },
+    "importance": {
+      "residual_sugar": 0.0
+    }
+  },
+  "payload": {
+    "decision": "refuse",
+    "expected_gain": 0.6,
+    "threshold": 2.0,
+    "data_window": {
+      "start": "batch-0001",
+      "end": "batch-0013",
+      "batch_ids": [
+        "batch-0001",
+        "batch-0002",
+        "batch-0003",
+        "batch-0004",
+        "batch-0005",
+        "batch-0006",
+        "batch-0007",
+        "batch-0008",
+        "batch-0009",
+        "batch-0010",
+        "batch-0011",
+        "batch-0012",
+        "batch-0013"
+      ]
+    },
+    "reason_code": "gain_below_threshold"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

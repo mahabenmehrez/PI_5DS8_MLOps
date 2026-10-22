@@ -1,0 +1,273 @@
+"""RepoContext: the facts the scanner extracts from a repository.
+
+Facts only, each with the evidence it came from. Choosing between conflicting
+facts (e.g. which Python version to use) is the decide layer's job.
+All paths are repo-relative and use forward slashes.
+"""
+
+from __future__ import annotations
+
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+DepKind = Literal[
+    "requirements", "pipfile", "pipfile_lock", "pyproject", "setup_py",
+    "setup_cfg", "conda", "poetry_lock", "uv_lock",
+]
+EntryRole = Literal["train", "predict", "serve", "evaluate", "data", "features", "main", "other"]
+FrameworkCategory = Literal["ml", "serving", "tracking", "data"]
+
+
+class Requirement(BaseModel):
+    name: str                      # as written in the file
+    spec: str = ""                 # raw version spec, e.g. "==1.3", "*", ">=2,<3"
+    dev: bool = False
+
+
+class DependencyFile(BaseModel):
+    path: str
+    kind: DepKind
+    packages: list[Requirement] = Field(default_factory=list)
+    note: str | None = None        # e.g. "install_requires is dynamic", "42 pinned packages"
+
+
+class VersionHint(BaseModel):
+    value: str                     # as written: "3.9", ">=3.10", "3.9.18"
+    source: str                    # file path
+    kind: str                      # pipfile, requires-python, dockerfile, pyc-cache, ...
+
+
+class ThirdPartyImport(BaseModel):
+    module: str                    # top-level import name, e.g. "sklearn"
+    distribution: str              # likely pip name, e.g. "scikit-learn"
+    declared: bool                 # found in some dependency file
+    files: list[str]               # where it is imported (.py and .ipynb)
+
+    @property
+    def notebooks_only(self) -> bool:
+        """Imported only from notebooks, never from pipeline code (.py)."""
+        return all(f.endswith(".ipynb") for f in self.files)
+
+
+class Framework(BaseModel):
+    name: str                      # pip name
+    category: FrameworkCategory
+    via: list[Literal["import", "dependency"]]
+
+
+class FunctionSig(BaseModel):
+    name: str
+    params: list[str] = Field(default_factory=list)  # "target_col", "num_rounds=371", "*args", "**kw"
+    doc: str | None = None                           # first docstring line
+    model_api: str | None = None                     # xgboost-native, xgboost-sklearn, lightgbm-native, ...
+    api_evidence: list[str] = Field(default_factory=list)   # the calls that show it, e.g. xgb.train
+    trains: bool = False           # calls .fit() or xgb/lgb.train() and returns a value (scan/scripts.py); not in render()
+
+    def render(self) -> str:
+        return f"{self.name}({', '.join(self.params)})"
+
+
+class EntryPoint(BaseModel):
+    path: str
+    role: EntryRole
+    has_main_guard: bool
+    cli: str | None = None         # argparse, click, typer, fire, sys.argv
+    functions: list[str] = Field(default_factory=list)  # top-level defs (capped)
+    signatures: list[FunctionSig] = Field(default_factory=list)  # same defs with parameters
+
+
+class CliArg(BaseModel):
+    """One argparse add_argument(...) of a training script."""
+    flags: list[str]               # ["--alpha", "-a"] or ["data_path"] (positional)
+    required: bool
+    default: str | None = None     # source text
+    type: str | None = None
+    help: str | None = None
+    action: str | None = None      # "store_true", ...
+
+
+class ModelOutput(BaseModel):
+    """A place the script may write its model."""
+    kind: str                      # joblib, pickle, save_model, mlflow.sklearn, ...
+    target: str                    # source text of the path or artifact path argument
+    line: int
+
+
+class TrainScript(BaseModel):
+    """A script that trains a model and runs from the command line (script-training mode)."""
+    path: str
+    has_main_guard: bool
+    cli: str | None = None         # argparse, click, typer, fire, sys.argv
+    cli_args: list[CliArg] = Field(default_factory=list)
+    argv: list[int] = Field(default_factory=list)       # sys.argv positions read
+    outputs: list[ModelOutput] = Field(default_factory=list)
+    imports_mlflow: bool = False
+
+
+class DataColumns(BaseModel):
+    path: str
+    columns: list[str]             # header only (capped)
+    n_columns: int
+    n_rows: int | None = None      # data rows (header excluded), counted while sampling
+
+
+class DataOverlap(BaseModel):
+    """Two data files share rows, estimated from consistent row-hash samples (see scan/rows.py)."""
+    a: str
+    b: str
+    shared_in_sample: int
+    a_sample: int
+    b_sample: int
+    a_in_b: float                  # share of a's sampled rows found in b (1.0: b contains a)
+    b_in_a: float                  # share of b's sampled rows found in a (1.0: a contains b)
+
+
+class TargetCandidate(BaseModel):
+    column: str
+    score: int                     # weighted evidence count (drop=1, label/fit/y-assign/target-*=3)
+    in_data: bool                  # appears in a data file header
+    evidence: list[str]            # "label: notebooks/x.ipynb", "drop: src/train.py", ...
+
+
+class TaskSignal(BaseModel):
+    """Evidence of the ML task in the code (scan/task.py)."""
+    kind: Literal["model", "metric", "objective"]
+    value: str                     # "XGBClassifier", "mean_squared_error", "reg:squarederror"
+    task: Literal["regression", "classification"]
+    files: list[str]
+
+
+class TargetValues(BaseModel):
+    """A sample of the top target column's values, from one data file (scan/task.py)."""
+    file: str
+    column: str
+    n: int                         # values read (at most scan.task.MAX_ROWS)
+    distinct: int
+    numeric: bool
+    integer: bool                  # numeric and every value a whole number
+    examples: list[str]            # first distinct values, at most 5
+    task: Literal["regression", "classification"] | None   # None: the values don't settle it
+
+
+class TargetTransform(BaseModel):
+    forward: str                   # "log1p"
+    inverse: str                   # "expm1"
+    applied_to: list[str]          # target columns, or "via <variable>" if not resolvable
+    forward_files: list[str]
+    inverse_files: list[str]       # empty: inverse never applied (e.g. serving returns log values)
+
+
+class Route(BaseModel):
+    methods: list[str]
+    path: str
+
+
+class WebApp(BaseModel):
+    path: str
+    framework: Literal["flask", "fastapi"]
+    app_var: str
+    target: str                    # "pkg.module:app", for gunicorn/uvicorn
+    routes: list[Route] = Field(default_factory=list)
+    port: int | None = None        # only if set explicitly in code
+    port_env_var: str | None = None
+
+
+class PortHint(BaseModel):
+    port: int
+    source: str
+    kind: str                      # app.run, uvicorn.run, dockerfile-expose, bind-flag, compose, procfile
+
+
+class PathReference(BaseModel):
+    literal: str                   # string literal from code, e.g. "../data/train.csv"
+    files: list[str]
+    exists: bool
+    resolved: str | None = None    # repo-relative path it points to, if it exists
+
+
+class ArtifactDir(BaseModel):
+    path: str
+    kind: Literal["data", "model"]
+    subdirs: list[str] = Field(default_factory=list)
+    n_files: int
+    total_bytes: int
+    extensions: dict[str, int] = Field(default_factory=dict)
+
+
+class FileInfo(BaseModel):
+    path: str
+    size_bytes: int
+
+
+class Notebook(BaseModel):
+    path: str
+    size_bytes: int
+    n_code_cells: int = 0
+    parse_ok: bool = True
+
+
+class LfsPointer(BaseModel):
+    path: str
+    object_size: int | None = None  # size of the real file on the LFS server
+
+
+class LfsInfo(BaseModel):
+    patterns: list[str] = Field(default_factory=list)       # "path/.gitattributes: pattern"
+    tracked_files: list[str] = Field(default_factory=list)  # files matching an LFS pattern
+    pointer_files: list[LfsPointer] = Field(default_factory=list)  # content not pulled
+
+
+class ParseError(BaseModel):
+    path: str
+    error: str
+
+
+class RepoContext(BaseModel):
+    root: str
+    name: str
+    is_git_repo: bool
+    n_python_files: int = 0
+
+    dependency_files: list[DependencyFile] = Field(default_factory=list)
+    python_version_hints: list[VersionHint] = Field(default_factory=list)
+
+    third_party_imports: list[ThirdPartyImport] = Field(default_factory=list)
+    stdlib_modules: list[str] = Field(default_factory=list)
+    local_modules: list[str] = Field(default_factory=list)
+    frameworks: list[Framework] = Field(default_factory=list)
+
+    entry_points: list[EntryPoint] = Field(default_factory=list)
+    web_apps: list[WebApp] = Field(default_factory=list)
+    port_hints: list[PortHint] = Field(default_factory=list)
+    path_references: list[PathReference] = Field(default_factory=list)
+
+    data_dirs: list[ArtifactDir] = Field(default_factory=list)
+    model_dirs: list[ArtifactDir] = Field(default_factory=list)
+    model_files: list[FileInfo] = Field(default_factory=list)
+    loose_data_files: list[FileInfo] = Field(default_factory=list)  # data files outside data dirs
+    notebooks: list[Notebook] = Field(default_factory=list)
+    lfs: LfsInfo = Field(default_factory=LfsInfo)
+
+    # slot candidates for the LLM
+    data_columns: list[DataColumns] = Field(default_factory=list)   # CSV/TSV headers in data dirs
+    target_candidates: list[TargetCandidate] = Field(default_factory=list)  # best first
+    target_transforms: list[TargetTransform] = Field(default_factory=list)
+    data_overlaps: list[DataOverlap] = Field(default_factory=list)  # data files sharing rows
+    task_signals: list[TaskSignal] = Field(default_factory=list)    # model classes, metrics, objectives
+    target_values: TargetValues | None = None                       # values of the top target column
+    train_scripts: list[TrainScript] = Field(default_factory=list)  # script-training mode candidates
+
+    existing_pipeline_files: list[str] = Field(default_factory=list)  # Dockerfile, Makefile, CI, ...
+    test_files: list[str] = Field(default_factory=list)
+    has_pytest_config: bool = False
+    parse_errors: list[ParseError] = Field(default_factory=list)
+
+    @property
+    def undeclared_imports(self) -> list[ThirdPartyImport]:
+        return [i for i in self.third_party_imports if not i.declared]
+
+    def summary(self, max_items: int = 8) -> str:
+        """Compact, deterministic text for the LLM planner (small context)."""
+        from .summary import render_summary
+        return render_summary(self, max_items)

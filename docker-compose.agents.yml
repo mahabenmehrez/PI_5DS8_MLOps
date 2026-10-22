@@ -1,0 +1,68 @@
+# The six agents (P1): one shared image, except the Trainer, which has its own (P4's). The wine stack itself is baseline/docker-compose.yaml.
+#   docker compose -f docker-compose.agents.yml build
+#   docker compose -f docker-compose.agents.yml run --rm setup          # one agent
+#   docker compose -f docker-compose.agents.yml up                      # all of them
+# Every agent: the repo mounted at /app, settings from agents.yaml + .env (keys never in the image),
+# Ollama and the baseline services (MLflow :5000, API :8000, Prometheus :9090) reached on the host.
+
+x-agent: &agent
+  build:
+    context: .
+    dockerfile: Dockerfile.agents
+  image: wine-agents:latest
+  working_dir: /app
+  volumes:
+    - .:/app
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    OLLAMA_HOST: http://host.docker.internal:11434
+    MLFLOW_TRACKING_URI: http://host.docker.internal:5000
+    API_URL: http://host.docker.internal:8000
+    PROMETHEUS_URL: http://host.docker.internal:9090
+    AGENTS_CONFIG: agents.yaml
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  restart: "no"
+
+services:
+  setup:
+    <<: *agent
+    command: ["python", "-m", "agents.setup"]
+  reviewer:
+    <<: *agent
+    command: ["python", "-m", "agents.reviewer"]
+  checker:
+    <<: *agent
+    command: ["python", "-m", "agents.checker"]
+  trainer:
+    # the Trainer's own image and settings, as P4 wrote them (agents/trainer/docker-compose.yml); it joins the
+    # baseline stack's network, so start baseline/docker-compose.yaml first
+    build:
+      context: .
+      dockerfile: agents/trainer/Dockerfile
+    container_name: trainer
+    restart: unless-stopped
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow_server:5000
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434   # Ollama on your PC; only used when the provider is ollama
+    env_file:
+      - path: .env            # GROQ_API_KEY / NVIDIA_API_KEY / LLM_PROVIDER; never copied into the image
+        required: false
+    volumes:
+      - ./runs:/app/runs      # board.db, shared with the other agents
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - example-network
+  deployer:
+    <<: *agent
+    command: ["python", "-m", "agents.deployer"]
+  monitor:
+    <<: *agent
+    command: ["python", "-m", "agents.monitor"]
+
+networks:
+  example-network:
+    external: true   # made by baseline/docker-compose.yaml

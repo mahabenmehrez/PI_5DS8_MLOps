@@ -1,0 +1,22 @@
+# The one image every agent runs from (roadmap 5.1 rule 8, 5.3): python -m agents.<name>.
+# Python 3.10 like the baseline images; make and git for the Setup Agent (dry run, builder branch).
+FROM python:3.10-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends make git \
+    && rm -rf /var/lib/apt/lists/* \
+    && git config --system --add safe.directory '*'
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# the repository itself is mounted at /app by docker-compose.agents.yml (agents read and write it);
+# copying it too makes the image usable on its own (CI, docker run)
+COPY . .
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    OLLAMA_HOST=http://host.docker.internal:11434
+
+CMD ["python", "-c", "print('choose an agent: python -m agents.<setup|reviewer|checker|trainer|deployer|monitor>')"]

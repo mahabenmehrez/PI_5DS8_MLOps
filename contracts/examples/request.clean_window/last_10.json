@@ -1,0 +1,25 @@
+{
+  "id": "msg-8e22f1a0b47c",
+  "time": "2026-03-15T09:05:00Z",
+  "type": "request",
+  "kind": "request.clean_window",
+  "sender": "trainer",
+  "to": [
+    "checker"
+  ],
+  "topic": "dataset:window",
+  "incident_id": "inc-9c03d1e8",
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Need passed or repaired batches from 2026-03-14T00:00Z to 2026-03-15T09:00Z, at least 800 rows",
+  "evidence": {},
+  "payload": {
+    "start": "2026-03-14T00:00:00Z",
+    "end": "2026-03-15T09:00:00Z",
+    "min_rows": 800
+  },
+  "status": "open",
+  "expires_at": "2026-03-15T09:35:00Z",
+  "run_id": "dev"
+}

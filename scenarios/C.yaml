@@ -1,0 +1,31 @@
+# Scenario C (roadmap 14): the data feed sends total sulfur dioxide in g/dm3.
+id: C
+title: Unit change in the data feed
+fault: data.unit_change.total_sulfur_dioxide
+deadline: {simulated_hours: 6}
+expect:
+  owner: checker
+  messages:                       # any order
+    - {kind: incident.claim, sender: checker}
+    - {kind: request.do_not_use, sender: checker, to: [trainer]}
+    - {kind: request.hold, sender: checker, to: [deployer]}
+  either:                         # who notices first depends on timing; both are fine
+    - [{kind: query.data_changed, sender: monitor}]
+    - [{kind: data.batch_checked, sender: checker, payload: {status: quarantined}}]
+  must_not:
+    - {kind: request.retrain}
+  max_human_cards: 1
+end_state:
+  batches: {"batch-0011": quarantined}
+  release_state: {stage: unchanged}   # checked once the real Deployer runs
+# Solo run only: what the fakes of the other agents do (fixtures, not ground truth).
+stubs:
+  monitor:
+    script:
+      - at_batch: 12
+        type: question
+        kind: query.data_changed
+        to: [checker]
+        topic: feature:total_sulfur_dioxide
+        summary: Live MAE up since batch 11; drift concentrated on total_sulfur_dioxide
+        payload: {feature: total_sulfur_dioxide, start: "{now-3h}", end: "{now}"}

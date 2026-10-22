@@ -1,0 +1,14 @@
+{
+  "repo": "baseline",
+  "commit": "0000000000000000000000000000000000000000",
+  "files": {
+    "Makefile": "baseline/Makefile",
+    "ci": ".github/workflows/pipeline.yml",
+    "schema": "samples/schema.py",
+    "agents_yaml": "samples/agents.yaml",
+    "dependency_map": "samples/dependency_map.yaml"
+  },
+  "agents_yaml": "samples/agents.yaml",
+  "schema_path": "samples/schema.py",
+  "depmap_seeded": true
+}

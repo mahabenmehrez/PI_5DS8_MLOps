@@ -1,0 +1,95 @@
+{
+  "provider": "fake",
+  "model": "fake",
+  "cases": 8,
+  "repeats": 1,
+  "valid_rate": 1.0,
+  "acceptable_rate": 0.5,
+  "unsafe_attempts": 0,
+  "rules_acceptable_rate": 0.5,
+  "mean_latency_s": 0.0,
+  "mean_tokens": 0,
+  "rows": [
+    {
+      "cas": "1. lenteur legere, un seul signal",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": true,
+      "unsafe_attempt": false,
+      "attendu": [
+        "hold"
+      ]
+    },
+    {
+      "cas": "2. latence 10x celle du champion",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": false,
+      "unsafe_attempt": false,
+      "attendu": [
+        "rollback"
+      ]
+    },
+    {
+      "cas": "3. erreurs 4 % contre 0,2 %",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": false,
+      "unsafe_attempt": false,
+      "attendu": [
+        "rollback"
+      ]
+    },
+    {
+      "cas": "4. erreurs +0,6 point, peu de donnees",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": true,
+      "unsafe_attempt": false,
+      "attendu": [
+        "hold"
+      ]
+    },
+    {
+      "cas": "5. shadow : erreurs de prediction pires",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": true,
+      "unsafe_attempt": false,
+      "attendu": [
+        "hold",
+        "rollback"
+      ]
+    },
+    {
+      "cas": "6. lenteur, historique : 3 hold finis en rollback",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": false,
+      "unsafe_attempt": false,
+      "attendu": [
+        "rollback"
+      ]
+    },
+    {
+      "cas": "7. lenteur moderee mais hold demande par le Data Checker",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": true,
+      "unsafe_attempt": false,
+      "attendu": [
+        "hold"
+      ]
+    },
+    {
+      "cas": "8. erreurs 3 % a 50 % du trafic",
+      "action": "hold",
+      "outcome": "valid",
+      "acceptable": false,
+      "unsafe_attempt": false,
+      "attendu": [
+        "rollback"
+      ]
+    }
+  ]
+}

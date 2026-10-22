@@ -1,0 +1,26 @@
+{
+  "id": "msg-93d0b5e7a1c4",
+  "time": "2026-03-16T14:20:00Z",
+  "type": "answer",
+  "kind": "request.expected_change",
+  "sender": "trainer",
+  "to": [
+    "reviewer"
+  ],
+  "topic": "expected_change:chg-0007",
+  "incident_id": null,
+  "reply_to": "msg-61e2a8d4c0f9",
+  "level": 1,
+  "confidence": null,
+  "summary": "Retrained on post-change data only (total_sulfur_dioxide in g/dm3); candidate v3 sent",
+  "evidence": {},
+  "payload": {
+    "decision": "done",
+    "detail": "trained on batches after the change",
+    "task": "retrain_on_post_change_data",
+    "done_at": "2026-03-16T14:19:30Z"
+  },
+  "status": "answered",
+  "expires_at": null,
+  "run_id": "dev"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "msg-a1b2c3d4e5f6",
+  "time": "2026-10-13T12:00:00Z",
+  "type": "finding",
+  "kind": "code.change_assessed",
+  "sender": "reviewer",
+  "to": ["checker", "monitor", "trainer"],
+  "topic": "commit:9b8f21a",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 1,
+  "confidence": 0.95,
+  "summary": "Assessed commit 9b8f21a: risk score 0.15, approved with no skew detected",
+  "evidence": {
+    "risk_score": 0.15,
+    "lines_changed": 12,
+    "touched_functions": ["prepare_features_serve"]
+  },
+  "payload": {
+    "commit": "9b8f21a",
+    "risk_score": 0.15,
+    "verdict": "approve",
+    "affected_features": ["total_sulfur_dioxide"],
+    "one_sided": false,
+    "feature_diff": {
+      "total_sulfur_dioxide": {
+        "identical_share": 1.0,
+        "ratio_median": 1.0
+      }
+    }
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

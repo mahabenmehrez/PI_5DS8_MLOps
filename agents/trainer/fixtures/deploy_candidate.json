@@ -1,0 +1,53 @@
+{
+  "id": "msg-c41e7b02a9f6",
+  "time": "2026-03-15T09:42:00Z",
+  "type": "request",
+  "kind": "request.deploy_candidate",
+  "sender": "trainer",
+  "to": [
+    "deployer"
+  ],
+  "topic": "model:wine-quality@2",
+  "incident_id": "inc-9c03d1e8",
+  "reply_to": null,
+  "level": 2,
+  "confidence": 0.82,
+  "summary": "Candidate v2 passes the gate: error (MAE) 0.471 vs 0.502 live, 6.2% lower, no wine group higher",
+  "evidence": {
+    "bootstrap_resamples": 500,
+    "eval_rows": 300
+  },
+  "payload": {
+    "model_uri": "models:/wine-quality@candidate",
+    "version": "2",
+    "champion_version": "1",
+    "metrics": {
+      "overall": {
+        "mae_candidate": 0.471,
+        "mae_champion": 0.502,
+        "delta_pct": -6.2
+      },
+      "by_group": {
+        "alcohol_band": {
+          "<10": -4.0,
+          "10-11.5": -7.1,
+          ">11.5": -5.5
+        },
+        "acidity_band": {
+          "<7.5": -6.0,
+          "7.5-9.5": -6.4,
+          ">9.5": -5.9
+        },
+        "quality_band": {
+          "<=5": -3.2,
+          "6": -7.5,
+          ">=7": -8.8
+        }
+      }
+    },
+    "comparison_ref": "runs:/<mlflow_run_id>/comparison.json"
+  },
+  "status": "open",
+  "expires_at": "2026-03-15T10:42:00Z",
+  "run_id": "dev"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "msg-7b4d25fd43f4",
+  "time": "2026-10-15T19:49:46.684309+00:00",
+  "type": "finding",
+  "kind": "deployment.stage_changed",
+  "sender": "deployer",
+  "to": [
+    "monitor",
+    "trainer"
+  ],
+  "topic": "deployment:prod",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 2,
+  "confidence": null,
+  "summary": "Stub moved model 2 from none to shadow",
+  "evidence": {},
+  "payload": {
+    "model_version": "2",
+    "from_stage": "none",
+    "to_stage": "shadow",
+    "candidate_share": 0.0
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

@@ -1,0 +1,95 @@
+{{ marker }}
+# Pipeline commands for the wine project (Setup Agent, roadmap 7.1). Paths are relative to this folder;
+# from the repository root: make -C {{ make_dir }} <target>. The code is in {{ layout.code_dir }}/, the data in
+# {{ data_dir }}/ (roadmap 5.2). The root Makefile is the team's (contract-test, solo, scenario, experiment).
+# `make all SAMPLE=1` runs on the first {{ sample_rows }} rows of the data: the Setup Agent's dry run.
+
+PYTHON ?= python
+ROOT := {{ "." | here }}
+DATA ?= {{ layout.data_path | here }}
+{% if data_url %}
+DATA_URL ?= {{ data_url }}
+{% endif %}
+SAMPLE ?= 0
+SAMPLE_ROWS ?= {{ sample_rows }}
+SAMPLE_FILE := .setup/sample/{{ layout.data_path.split("/")[-1] }}
+ifeq ($(SAMPLE),1)
+RUN_DATA := $(SAMPLE_FILE)
+SAMPLE_DEP := sample
+else
+RUN_DATA := $(DATA)
+SAMPLE_DEP :=
+endif
+
+.PHONY: install tools data sample train serve test all
+.NOTPARALLEL:
+
+## install: the project's requirements{{ ", plus what the code needs but no requirements file declares" if plan.extra_packages else "" }}
+## (only the project's packages: train runs on exactly these, so a forgotten dependency fails here)
+install:
+	$(PYTHON) -m pip install{% for r in plan.requirements %} -r {{ r | here }}{% endfor %}{% for p in plan.extra_packages %} {{ p }}{% endfor %}
+
+
+## tools: what the checks need (schema, tests), installed after train. These are the agent's tools, not the
+## project's: they must work with the versions the project needs. The newest pandera refuses an older numpy or
+## pandas at import; then an older pandera that accepts them replaces it (PANDERA_FALLBACK: checked with
+## numpy 1.23.5 + pandas 2.3.3 and with numpy 1.26.4 + pandas 1.5.3).
+PANDERA_FALLBACK ?= 0.20.4
+tools:
+	$(PYTHON) -m pip install pytest pandera pyyaml
+	$(PYTHON) -c "import pandera.pandas as pa; pa.DataFrameSchema" 2>/dev/null || \
+	  $(PYTHON) -c "import pandera as pa; pa.DataFrameSchema" 2>/dev/null || \
+	  $(PYTHON) -m pip install "pandera==$(PANDERA_FALLBACK)"
+
+{% if data_url %}
+## data: download the data if it is missing ({{ data_dir }}/ is not in git)
+data:
+	$(PYTHON) -c "import os, sys, urllib.request; dst, url = sys.argv[1:]; os.makedirs(os.path.dirname(dst) or '.', exist_ok=True); os.path.exists(dst) or urllib.request.urlretrieve(url, dst)" $(DATA) $(DATA_URL)
+{% else %}
+## data: the data must be there (no download address known)
+data:
+	@test -f $(DATA) || (echo "missing data file $(DATA)" && exit 1)
+{% endif %}
+
+## sample: the first $(SAMPLE_ROWS) rows of the data, header kept (used when SAMPLE=1)
+sample: data
+	$(PYTHON) -c "import itertools, os, sys; src, dst, n = sys.argv[1:]; os.makedirs(os.path.dirname(dst), exist_ok=True); open(dst, 'w', newline='').writelines(itertools.islice(open(src, newline=''), int(n) + 1))" $(DATA) $(SAMPLE_FILE) $(SAMPLE_ROWS)
+
+{% if plan.train_script %}
+## train: the project's own training script{{ ", given the data path" if plan.train_argv_data or plan.train_data_flag else "" }}
+
+train: data $(SAMPLE_DEP)
+	{{ train_command }}
+
+
+{% else %}
+## train: no training script found in {{ layout.code_dir }}/ (the Trainer adds it, roadmap 2.3)
+train:
+	@echo "no training script in {{ layout.code_dir }}/" && exit 1
+
+{% endif %}
+{% if plan.serve_target %}
+## serve: the prediction API on port 8000 (long-running, not part of all)
+serve:
+	$(PYTHON) -m uvicorn {{ serve_module }} --host 0.0.0.0 --port 8000
+
+{% else %}
+serve:
+	@echo "no web app found in {{ layout.code_dir }}/" && exit 1
+
+{% endif %}
+{% if plan.team_schema %}
+## test: the data against the team's schema ({{ plan.team_schema }}, the Data Checker's), then the unit tests
+test: tools data $(SAMPLE_DEP)
+	$(PYTHON) -c "import importlib.util as u, sys, pandas as pd; s = u.spec_from_file_location('team_schema', sys.argv[1]); m = u.module_from_spec(s); s.loader.exec_module(m); schemas = [v for v in vars(m).values() if type(v).__name__ == 'DataFrameSchema']; assert schemas, 'no DataFrameSchema in ' + sys.argv[1]; df = pd.read_csv(sys.argv[2], sep=None, engine='python'); df = m.normalize_columns(df) if hasattr(m, 'normalize_columns') else df; schemas[0].validate(df, lazy=True); print(sys.argv[2] + ': passes the team schema')" {{ plan.team_schema | here }} $(RUN_DATA)
+{% else %}
+## test: the data against the batch schema, then the unit tests
+test: tools data $(SAMPLE_DEP)
+	$(PYTHON) {{ layout.schema_file | here }} $(RUN_DATA)
+{% endif %}
+{% if plan.has_tests %}
+	cd $(ROOT) && $(PYTHON) -m pytest -q {{ layout.tests_dir }}    # the tests run from the repo root
+{% endif %}
+
+## all: what the Setup Agent's dry run checks (make all SAMPLE=1)
+all: install train test

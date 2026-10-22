@@ -1,0 +1,14 @@
+id: model.concept_drift.high_alcohol_gradual
+layer: model
+author: P4
+target: {alcohol_gt: 11.5, delta: -1, ramp_batches: 10}   # wines above 11.5% vol scored 1 point lower
+start: {after_batches: 10}
+duration: {batches: 30}
+applies_to: [labels]
+inject: harness.faults.model:shift_labels
+revert: harness.faults.model:restore
+expected:
+  owner: monitor
+  root_cause_node: "model:wine-quality"
+  acceptable_actions: [retrain_in_dry_run, send_to_deployer]
+  must_not: [quarantine]

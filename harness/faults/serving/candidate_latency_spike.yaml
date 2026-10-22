@@ -1,0 +1,17 @@
+# Faute serving : le candidat devient lent (scenario G). Format du roadmap 13.4.
+# Lu par harness/fault_runner.py (P3) : start.after_batches et duration.batches sont obligatoires.
+# Pour le Deployer, un "batch" = une heure simulee de trafic ; la faute vise l'etape 10 % du deploiement.
+id: serving.candidate_latency_spike
+layer: serving                          # code | data | model | serving | monitoring
+author: P5
+target: {slow_ms: 400}                  # equivalent de SLOW_MS=400
+start: {after_batches: 10}
+duration: {batches: 3}
+applies_to: [requests]
+inject: harness.faults.serving:inject_slow
+revert: harness.faults.serving:revert_slow
+expected:
+  owner: deployer
+  root_cause_node: "deployment:prod"
+  acceptable_actions: [rollback_emergency]
+  must_not: [promote_100, request.approval]

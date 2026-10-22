@@ -1,0 +1,2137 @@
+[
+ {
+  "repo": "sk_root",
+  "fault": "broken_import",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'LogisticRegresion' from 'sklearn.linear_model' (/root/.cache/setup-agent/venv-5a91ce88a58e3846/lib/python3.10/site-packages/sklearn/linear_model/__init__.py)"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "data_dir_path",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.045,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.045,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'iris.csv'"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "missing_data_file",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.043,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.043,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'data/iris_v2.csv'"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "numpy_NaN",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.036,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-007",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.036,
+   "gen-004": 0.27,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: `np.NaN` was removed in the NumPy 2.0 release. Use `np.nan` instead."
+ },
+ {
+  "repo": "sk_root",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.386,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'iteritems'. Did you mean: 'isetitem'?"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "pandas"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "pandas_read_csv_squeeze",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.018,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.018,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: read_csv() got an unexpected keyword argument 'squeeze'"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "removed_numpy_alias",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.269,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.028,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.022,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.022,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.269,
+   "gen-004": 0.35,
+   "gen-009": 0.0,
+   "gen-002": 0.028
+  },
+  "error": "AttributeError: module 'numpy' has no attribute 'float'."
+ },
+ {
+  "repo": "sk_root",
+  "fault": "removed_numpy_product",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.269,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.028,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.022,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.022,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.269,
+   "gen-004": 0.35,
+   "gen-009": 0.0,
+   "gen-002": 0.028
+  },
+  "error": "AttributeError: module 'numpy' has no attribute 'product'"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.393,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'append'. Did you mean: '_append'?"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "pandas"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "removed_scipy_simps",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'simps' from 'scipy.integrate' (/root/.cache/setup-agent/venv-ba94bd3e09824e36/lib/python3.10/site-packages/scipy/integrate/__init__.py)"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "scipy_misc_face",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'face' from 'scipy.misc' (/root/.cache/setup-agent/venv-ba94bd3e09824e36/lib/python3.10/site-packages/scipy/misc/__init__.py)"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "sklearn_bagging_base_estimator",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.017,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.017,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: BaggingClassifier.__init__() got an unexpected keyword argument 'base_estimator'"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "sklearn_load_boston",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "scikit-learn"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-012",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-005",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ImportError:"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "sklearn_load_boston",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "scikit-learn"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_root",
+  "fault": "unpinned_version",
+  "stage": "train",
+  "about": [
+   "scikit-learn"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-007",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.019,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: got an unexpected keyword argument 'squared'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "broken_import",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'RandomForestClassifer' from 'sklearn.ensemble' (/root/.cache/setup-agent/venv-e0924efee909e275/lib/python3.10/site-packages/sklearn/ensemble/__init__.py)"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "data_dir_path",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.045,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.045,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'iris.csv'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "missing_data_file",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.043,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.043,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'data/iris_v2.csv'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "numpy_NaN",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.036,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-007",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.036,
+   "gen-004": 0.27,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: `np.NaN` was removed in the NumPy 2.0 release. Use `np.nan` instead."
+ },
+ {
+  "repo": "sk_src",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.386,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'iteritems'. Did you mean: 'isetitem'?"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "pandas"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "pandas_read_csv_squeeze",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.018,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.018,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: read_csv() got an unexpected keyword argument 'squeeze'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "pandas_read_csv_squeeze",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "pandas"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "removed_numpy_alias",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.269,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.028,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.022,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.022,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.269,
+   "gen-004": 0.35,
+   "gen-009": 0.0,
+   "gen-002": 0.028
+  },
+  "error": "AttributeError: module 'numpy' has no attribute 'float'."
+ },
+ {
+  "repo": "sk_src",
+  "fault": "removed_numpy_product",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.269,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.028,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.022,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.022,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.269,
+   "gen-004": 0.35,
+   "gen-009": 0.0,
+   "gen-002": 0.028
+  },
+  "error": "AttributeError: module 'numpy' has no attribute 'product'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.393,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'append'. Did you mean: '_append'?"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "pandas"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "removed_scipy_simps",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'simps' from 'scipy.integrate' (/root/.cache/setup-agent/venv-5e9d4864c3091838/lib/python3.10/site-packages/scipy/integrate/__init__.py)"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "scipy_misc_face",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'face' from 'scipy.misc' (/root/.cache/setup-agent/venv-5e9d4864c3091838/lib/python3.10/site-packages/scipy/misc/__init__.py)"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "sklearn_bagging_base_estimator",
+  "stage": "train",
+  "about": [
+   "scikit-learn"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.017,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.017,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: BaggingClassifier.__init__() got an unexpected keyword argument 'base_estimator'"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "sklearn_load_boston",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "scikit-learn"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-012",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-005",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ImportError:"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "sklearn_load_boston",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "scikit-learn"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "correct",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 1.0,
+    "kept": true,
+    "relevant": true
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 1.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject"
+ },
+ {
+  "repo": "sk_src",
+  "fault": "unpinned_version",
+  "stage": "train",
+  "about": [
+   "scikit-learn"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-007",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.019,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: got an unexpected keyword argument 'squared'"
+ },
+ {
+  "repo": "wine",
+  "fault": "broken_import",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'ElasticNett' from 'sklearn.linear_model' (/root/.cache/setup-agent/venv-45a09aaa440a5853/lib/python3.10/site-packages/sklearn/linear_model/__init__.py)"
+ },
+ {
+  "repo": "wine",
+  "fault": "data_dir_path",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.043,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.043,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'winequality-red.csv'"
+ },
+ {
+  "repo": "wine",
+  "fault": "missing_data_file",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.042,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.042,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: 'data/winequality-white.csv'"
+ },
+ {
+  "repo": "wine",
+  "fault": "numpy_NaN",
+  "skipped": "no diagnosis (rules or no error)"
+ },
+ {
+  "repo": "wine",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.386,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'iteritems'. Did you mean: 'isetitem'?"
+ },
+ {
+  "repo": "wine",
+  "fault": "pandas_df_iteritems",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.386,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'iteritems'. Did you mean: 'isetitem'?"
+ },
+ {
+  "repo": "wine",
+  "fault": "pandas_read_csv_squeeze",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.018,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.018,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: read_csv() got an unexpected keyword argument 'squeeze'"
+ },
+ {
+  "repo": "wine",
+  "fault": "removed_numpy_alias",
+  "stage": "train",
+  "about": [
+   "numpy"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.269,
+    "kept": false,
+    "relevant": true
+   },
+   {
+    "id": "gen-002",
+    "score": 0.028,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.022,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.022,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.269,
+   "gen-004": 0.35,
+   "gen-009": 0.0,
+   "gen-002": 0.028
+  },
+  "error": "AttributeError: module 'numpy' has no attribute 'float'."
+ },
+ {
+  "repo": "wine",
+  "fault": "removed_numpy_product",
+  "skipped": "no diagnosis (rules or no error)"
+ },
+ {
+  "repo": "wine",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.393,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'append'. Did you mean: '_append'?"
+ },
+ {
+  "repo": "wine",
+  "fault": "removed_pandas_append",
+  "stage": "train",
+  "about": [
+   "pandas"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.019,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.393,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "AttributeError: 'DataFrame' object has no attribute 'append'. Did you mean: '_append'?"
+ },
+ {
+  "repo": "wine",
+  "fault": "removed_scipy_simps",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'simps' from 'scipy.integrate' (/root/.cache/setup-agent/venv-723454a1dad56b9a/lib/python3.10/site-packages/scipy/integrate/__init__.py)"
+ },
+ {
+  "repo": "wine",
+  "fault": "scipy_misc_face",
+  "stage": "train",
+  "about": [
+   "scipy"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-006",
+    "score": 0.283,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-002",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.283,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.014,
+   "gen-012": 0.014,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.019
+  },
+  "error": "ImportError: cannot import name 'face' from 'scipy.misc' (/root/.cache/setup-agent/venv-723454a1dad56b9a/lib/python3.10/site-packages/scipy/misc/__init__.py)"
+ },
+ {
+  "repo": "wine",
+  "fault": "sklearn_bagging_base_estimator",
+  "stage": "train",
+  "about": [],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "gen-003",
+    "score": 0.017,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-006",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.017,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: BaggingClassifier.__init__() got an unexpected keyword argument 'base_estimator'"
+ },
+ {
+  "repo": "wine",
+  "fault": "sklearn_load_boston",
+  "stage": "train",
+  "about": [
+   "numpy",
+   "scikit-learn"
+  ],
+  "relevant": [
+   "gen-003"
+  ],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-012",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-005",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.0,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "ImportError:"
+ },
+ {
+  "repo": "wine",
+  "fault": "unpinned_version",
+  "stage": "train",
+  "about": [
+   "scikit-learn"
+  ],
+  "relevant": [],
+  "action": "incorrect",
+  "top3": [
+   {
+    "id": "fault-001",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-003",
+    "score": 0.019,
+    "kept": false,
+    "relevant": false
+   },
+   {
+    "id": "gen-007",
+    "score": 0.0,
+    "kept": false,
+    "relevant": false
+   }
+  ],
+  "all_scores": {
+   "fault-001": 0.0,
+   "gen-006": 0.0,
+   "gen-007": 0.0,
+   "gen-008": 0.0,
+   "gen-005": 0.0,
+   "gen-012": 0.0,
+   "gen-003": 0.019,
+   "gen-004": 0.0,
+   "gen-009": 0.0,
+   "gen-002": 0.0
+  },
+  "error": "TypeError: got an unexpected keyword argument 'squared'"
+ }
+]

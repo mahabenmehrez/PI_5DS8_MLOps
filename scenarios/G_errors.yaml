@@ -1,0 +1,14 @@
+# Scenario G, variante : rafale d'erreurs sur le candidat a 10 %.
+id: G
+title: Candidate error burst during the 10% stage
+fault: serving.candidate_error_burst
+deadline: {simulated_hours: 1}
+expect:
+  owner: deployer
+  messages:
+    - {kind: deployment.rolled_back, sender: deployer, payload: {automatic: true}}
+  must_not:
+    - {kind: request.approval, sender: deployer}
+  max_human_cards: 0
+  end_state:
+    release_state: {stage: none, candidate_share: 0.0}

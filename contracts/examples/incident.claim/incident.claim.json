@@ -1,0 +1,40 @@
+{
+  "id": "msg-2f4d4b35f801",
+  "time": "2026-03-14T11:00:00Z",
+  "type": "claim",
+  "kind": "incident.claim",
+  "sender": "checker",
+  "to": [
+    "setup",
+    "reviewer",
+    "trainer",
+    "deployer",
+    "monitor"
+  ],
+  "topic": "incident:inc-48ca07d3",
+  "incident_id": "inc-48ca07d3",
+  "reply_to": null,
+  "level": 1,
+  "confidence": 0.9,
+  "summary": "Data incident: unit_change on total_sulfur_dioxide since batch-0011",
+  "evidence": {
+    "batches": [
+      "batch-0011"
+    ],
+    "cause": "unit_change"
+  },
+  "payload": {
+    "root_cause_node": "feature:total_sulfur_dioxide",
+    "evidence_refs": [
+      "dataset:batch-0011"
+    ],
+    "instructions": {
+      "trainer": "do_not_use",
+      "deployer": "hold",
+      "monitor": "do not request a retrain"
+    }
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

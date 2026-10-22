@@ -1,0 +1,27 @@
+# The Trainer as a service next to the baseline stack (start baseline/docker-compose.yaml first).
+#   docker compose -f agents/trainer/docker-compose.yml up -d --build
+#   docker compose -f agents/trainer/docker-compose.yml logs -f trainer
+# P1 can copy the `trainer` service into docker-compose.agents.yml as it is.
+services:
+  trainer:
+    build:
+      context: ../..
+      dockerfile: agents/trainer/Dockerfile
+    container_name: trainer
+    restart: unless-stopped
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow_server:5000
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434   # Ollama on your PC; only used when the provider is ollama
+    env_file:
+      - path: ../../.env      # GROQ_API_KEY / NVIDIA_API_KEY / LLM_PROVIDER; never copied into the image
+        required: false
+    volumes:
+      - ../../runs:/app/runs                          # board.db, shared with the other agents
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - example-network
+
+networks:
+  example-network:
+    external: true   # made by baseline/docker-compose.yaml

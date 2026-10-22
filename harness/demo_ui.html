@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Checker — démo</title>
+  <style>
+    :root {
+      --bg: #f6f5f1;
+      --surface: #ffffff;
+      --ink: #1d1f23;
+      --muted: #626872;
+      --line: #e3e1da;
+      --accent: #3b4fd8;
+      --accent-ink: #ffffff;
+      --ok: #1f7a4d;
+      --ok-bg: #e4f3ea;
+      --bad: #b3261e;
+      --bad-bg: #fbe7e5;
+      --fix: #1d5fb8;
+      --fix-bg: #e5eefb;
+      --warn: #8a5a00;
+      --warn-bg: #fbf0d9;
+      --code: #f0efe9;
+      color-scheme: light;
+      /* always light, whatever the system theme */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    header {
+      padding: 28px 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    header .wrap {
+      padding: 0;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .mode {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .seg button {
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      padding: 8px 14px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .seg button.on {
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .seg button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding: 22px 0 60px;
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h2 {
+      margin: 2px 0 4px;
+      font-size: 19px;
+    }
+
+    .what {
+      color: var(--muted);
+      margin: 0;
+      max-width: 640px;
+    }
+
+    .run {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font: 600 15px system-ui, sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .run:disabled {
+      opacity: .6;
+      cursor: progress;
+    }
+
+    .out {
+      margin-top: 16px;
+    }
+
+    .out:empty {
+      display: none;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .kpi .v {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi .l {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kpi.good .v {
+      color: var(--ok);
+    }
+
+    .kpi.bad .v {
+      color: var(--bad);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card .top {
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .card.repaired .top {
+      background: var(--fix-bg);
+      color: var(--fix);
+    }
+
+    .card.quarantined .top {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .card.passed .top {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .card .body {
+      padding: 12px 14px;
+      display: grid;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--code);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 13px;
+    }
+
+    code,
+    .mono {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 13px;
+    }
+
+    ul.plain {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .reason {
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .badge.ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .badge.bad {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .strip {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 4px;
+      margin: 12px 0 4px;
+    }
+
+    .cell {
+      border-radius: 6px;
+      padding: 6px 0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .cell.passed {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .cell.quarantined {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .cell.repaired {
+      background: var(--fix-bg);
+      color: var(--fix);
+    }
+
+    .legend {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 13.5px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tr.key td {
+      background: var(--warn-bg);
+    }
+
+    tr.quiet td {
+      color: var(--muted);
+    }
+
+    .err {
+      color: var(--bad);
+      background: var(--bad-bg);
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+
+    .spin {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: r .8s linear infinite;
+      vertical-align: -2px;
+      margin-right: 6px;
+    }
+
+    @keyframes r {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .strip {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Data Checker — démo (P3)</h1>
+      <p class="sub">Pipeline MLOps « qualité du vin » · chaque lot de 100 vins est contrôlé avant l'entraînement</p>
+      <div class="mode">
+        <span class="hint">Qui prend la décision :</span>
+        <div class="seg" id="mode">
+          <button data-llm="0" class="on">Les règles</button>
+          <button data-llm="1" id="llmBtn" disabled>Le LLM</button>
+        </div>
+        <span class="hint" id="llmInfo">vérification du LLM…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Étape 1 · la démo principale</div>
+          <h2>Trois lots en panne, trois décisions</h2>
+          <p class="what">Pour chaque cas, l'agent reçoit 10 lots normaux, puis un lot en panne. Est-ce qu'il répare,
+            bloque ou accepte ?</p>
+        </div>
+        <button class="run" data-run="cases">Lancer les 3 lots</button>
+      </div>
+      <div class="out" id="out-cases"></div>
+    </section>
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Étape 2</div>
+          <h2>Le scénario C, avec les autres agents</h2>
+          <p class="what">Le fournisseur envoie le soufre en g/L pendant 3 lots (11 à 13). Les autres agents sont
+            simulés en attendant l'intégration.</p>
+        </div>
+        <button class="run" data-run="scenario">Lancer le scénario C</button>
+      </div>
+      <div class="out" id="out-scenario"></div>
+    </section>
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Étape 3</div>
+          <h2>Les résultats chiffrés</h2>
+          <p class="what" id="evalWhat">8 types de pannes × 3 répétitions, plus 60 lots normaux. Environ 30 secondes.
+          </p>
+        </div>
+        <button class="run" data-run="evaluate">Mesurer</button>
+      </div>
+      <div class="out" id="out-evaluate"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const FAULTS = {
+      "data.unit_change.total_sulfur_dioxide": ["Soufre en g/L au lieu de mg/L", "quarantaine"],
+      "data.missing_values.alcohol": ["10 % d'alcool manquant", "réparer"],
+      "data.renamed_column.alcohol": ["Colonne alcohol renommée", "réparer"],
+      "data.duplicated_rows": ["20 % de doublons", "réparer"],
+      "data.out_of_range.pH": ["3 % de pH impossibles (pH 9)", "réparer"],
+      "data.new_column": ["Nouvelle colonne inutilisée", "accepter"],
+      "data.valid_shift.white_wine": ["Lot de vins blancs", "accepter + avertir"],
+      "data.valid_shift.residual_sugar": ["Sucre ×1.5 (peu important)", "accepter + avertir"],
+    };
+    const ACTION = {
+      pass: "accepter", pass_with_warning: "accepter avec avertissement", warn: "accepter et signaler la dérive",
+      repair: "réparer", quarantine: "mettre en quarantaine", request_hold: "geler les mises en production"
+    };
+    const KIND = {
+      "data.batch_checked": "résultat du contrôle", "request.do_not_use": "« n'utilise pas ce lot »",
+      "incident.claim": "« cet incident est à moi »", "request.hold": "« gèle les mises en production »",
+      "data.drift_trend": "dérive signalée", "query.data_changed": "« les données ont changé ? »"
+    };
+    const CHECK = {
+      duplicates: "doublons", unit_change: "changement d'unité", schema_range: "valeur impossible",
+      null_spike: "valeurs manquantes", renamed_column: "colonne renommée", missing_column: "colonne manquante",
+      drift: "dérive", range_shift: "hors plage habituelle", batch_anomaly: "lot inhabituel (Isolation Forest)",
+      new_column: "nouvelle colonne", type_changed: "type changé", out_of_range: "hors plage"
+    };
+
+    let llm = "0";
+    const $ = (s, el = document) => el.querySelector(s);
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    async function api(path) {
+      const r = await fetch(path);
+      const body = await r.json();
+      if (!r.ok) throw new Error(body.error || r.statusText);
+      return body;
+    }
+
+    const render = {
+      cases(d) {
+        return `<div class="cards">${d.cases.map(c => `
+      <div class="card ${c.status}">
+        <div class="top">${esc(c.verdict)}</div>
+        <div class="body">
+          <div><div class="lbl">Le lot</div>${esc(c.label)}</div>
+          <div><div class="lbl">Ce que l'agent a trouvé</div><ul class="plain">${c.findings.map(f =>
+          `<li>${esc(CHECK[f.check] || f.check)}${f.column ? ` · <b>${esc(f.column)}</b>` : ""}${Object.keys(f.evidence).length ? ` <span class="mono">${esc(JSON.stringify(f.evidence))}</span>` : ""}</li>`).join("")}</ul></div>
+          <div><div class="lbl">Décision · par ${esc(c.source)}</div><b>${esc(ACTION[c.decision] || c.decision)}</b>
+            ${c.reason ? `<div class="reason">${esc(c.reason.slice(0, 260))}</div>` : ""}</div>
+          ${c.dry_run === null ? "" : `<div><div class="lbl">Essai sur une copie (dry run)</div>${c.dry_run ? "✅ réussi" : "❌ échoué"}</div>`}
+          <div><div class="lbl">Messages envoyés</div><div class="chips">${c.messages.map(m =>
+            `<span class="chip">${esc(KIND[m.kind] || m.kind)} → ${esc(m.to.join(", "))}</span>`).join("")}</div></div>
+        </div>
+      </div>`).join("")}</div>`;
+      },
+      scenario(d) {
+        const ids = Object.keys(d.batches);
+        const strip = ids.map(b => `<div class="cell ${d.batches[b]}" title="${b} : ${d.batches[b]}">${b.slice(-2)}</div>`).join("");
+        const rows = d.messages.filter(m => !(m.kind === "data.batch_checked" && m.status === "passed")).map(m => {
+          const key = ["incident.claim", "query.data_changed"].includes(m.kind) || m.status === "quarantined";
+          const quiet = m.sender !== "checker" && m.kind !== "query.data_changed";
+          return `<tr class="${key ? "key" : quiet ? "quiet" : ""}"><td class="mono">${esc(m.time)}</td><td>${esc(m.sender)}</td>
+        <td>${esc(m.to.length > 3 ? "tous" : m.to.join(", "))}</td><td>${esc(KIND[m.kind] || m.kind)}${m.type === "answer" ? " (réponse)" : ""}</td>
+        <td>${esc(m.summary)}</td></tr>`;
+        }).join("");
+        return `<span class="badge ${d.passed ? "ok" : "bad"}">${d.passed ? "SCÉNARIO C : RÉUSSI" : "SCÉNARIO C : ÉCHEC"}</span>
+      ${d.problems.length ? `<ul>${d.problems.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+      <div class="strip">${strip}</div>
+      <p class="legend">Les 16 lots : vert = accepté · rouge = quarantaine · bleu = réparé</p>
+      <div class="scroll"><table><thead><tr><th>Heure</th><th>De</th><th>À</th><th>Message</th><th>Détail</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+      <p class="legend">Les lignes en jaune sont celles à montrer. Les lots acceptés sont masqués pour la lisibilité.</p>`;
+      },
+      evaluate(d) {
+        const acc = Math.round(d.accuracy * 100);
+        return `<div class="kpis">
+      <div class="kpi ${acc >= 90 ? "good" : "bad"}"><div class="v">${acc} %</div><div class="l">pannes bien décidées · objectif ≥ 90 %</div></div>
+      <div class="kpi ${d.false_alarms ? "bad" : "good"}"><div class="v">${d.false_alarms}</div><div class="l">lots normaux bloqués ou modifiés, sur ${d.normal_batches}</div></div>
+      <div class="kpi ${d.alarms_per_15 <= 1 ? "good" : "bad"}"><div class="v">${d.alarms_per_15}</div><div class="l">alarme(s) pour 15 lots normaux · objectif ≤ 1</div></div>
+    </div>
+    <div class="scroll" style="margin-top:14px"><table><thead><tr><th>Panne injectée</th><th>Bonne réponse</th><th>Réussite</th></tr></thead><tbody>
+      ${d.faults.map(f => `<tr><td>${esc((FAULTS[f.fault] || [f.fault])[0])}</td><td>${esc((FAULTS[f.fault] || ["", ""])[1])}</td>
+        <td>${f.ok === f.runs ? "✅" : "❌"} ${f.ok}/${f.runs}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${d.llm ? `<p class="legend">Mode LLM : 1 répétition et 15 lots normaux seulement, pour économiser le quota gratuit de Groq.
+      Sur si peu de lots, le chiffre d'alarmes n'est pas fiable.</p>` : ""}`;
+      },
+    };
+
+    document.querySelectorAll("[data-run]").forEach(btn => btn.addEventListener("click", async () => {
+      const name = btn.dataset.run, out = $(`#out-${name}`);
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.innerHTML = `<span class="spin"></span>En cours…`;
+      out.innerHTML = "";
+      try {
+        const query = ["cases", "evaluate"].includes(name) ? `?llm=${llm}` : "";
+        out.innerHTML = render[name](await api(`/api/${name}${query}`));
+      } catch (e) {
+        out.innerHTML = `<div class="err">Erreur : ${esc(e.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    }));
+
+    $("#mode").addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      llm = b.dataset.llm;
+      document.querySelectorAll("#mode button").forEach(x => x.classList.toggle("on", x === b));
+      $("#evalWhat").textContent = llm === "1"
+        ? "Avec le LLM : 8 types de pannes × 1 répétition, plus 15 lots normaux (quota gratuit). Environ 1 minute."
+        : "8 types de pannes × 3 répétitions, plus 60 lots normaux. Environ 30 secondes.";
+    });
+
+    api("/api/status").then(s => {
+      if (s.llm) { $("#llmBtn").disabled = false; $("#llmInfo").textContent = `LLM disponible : ${s.llm_name}`; }
+      else { $("#llmInfo").textContent = "LLM indisponible (pas de clé dans .env) : les règles décident."; }
+    }).catch(() => { $("#llmInfo").textContent = "LLM indisponible."; });
+  </script>
+</body>
+
+</html>

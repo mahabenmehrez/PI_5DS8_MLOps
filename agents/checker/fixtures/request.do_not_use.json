@@ -1,0 +1,26 @@
+{
+  "id": "msg-0c856c855adf",
+  "time": "2026-03-14T11:00:00Z",
+  "type": "request",
+  "kind": "request.do_not_use",
+  "sender": "checker",
+  "to": [
+    "trainer"
+  ],
+  "topic": "dataset:batch-0011",
+  "incident_id": "inc-48ca07d3",
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Do not train on batch-0011",
+  "evidence": {},
+  "payload": {
+    "batch_ids": [
+      "batch-0011"
+    ],
+    "reason": "unit_change: unit_change:total sulfur dioxide, schema_range:total sulfur dioxide"
+  },
+  "status": "answered",
+  "expires_at": "2026-03-14T12:00:00Z",
+  "run_id": "dev"
+}

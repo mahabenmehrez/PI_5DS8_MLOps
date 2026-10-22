@@ -1,0 +1,15 @@
+# Scenario G : le candidat ralentit pendant l'etape 10 % (format du roadmap 14.1).
+id: G
+title: Candidate latency spike during the 10% stage
+fault: serving.candidate_latency_spike
+deadline: {simulated_hours: 1}
+expect:
+  owner: deployer
+  messages:                                   # dans n'importe quel ordre
+    - {kind: deployment.rolled_back, sender: deployer, payload: {automatic: true}}
+  must_not:
+    - {kind: request.approval, sender: deployer}
+    - {kind: deployment.stage_changed, sender: deployer, payload: {to_stage: "100%"}}
+  max_human_cards: 0
+  end_state:
+    release_state: {stage: none, candidate_share: 0.0}

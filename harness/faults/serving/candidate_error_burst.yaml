@@ -1,0 +1,17 @@
+# Faute serving : le candidat echoue sur 10 % des requetes (scenario G).
+# Lu par harness/fault_runner.py (P3) : start.after_batches et duration.batches sont obligatoires.
+# Pour le Deployer, un "batch" = une heure simulee de trafic ; la faute vise l'etape 10 % du deploiement.
+id: serving.candidate_error_burst
+layer: serving                          # code | data | model | serving | monitoring
+author: P5
+target: {err_pct: 10}
+start: {after_batches: 10}
+duration: {batches: 3}
+applies_to: [requests]
+inject: harness.faults.serving:inject_errors
+revert: harness.faults.serving:revert_errors
+expected:
+  owner: deployer
+  root_cause_node: "deployment:prod"
+  acceptable_actions: [rollback_emergency]
+  must_not: [promote_100, request.approval]

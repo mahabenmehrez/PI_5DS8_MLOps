@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup Agent — demo</title>
+  <style>
+    /* same look as the Data Checker's demo (harness/demo_ui.html) */
+    :root {
+      --bg: #f6f5f1;
+      --surface: #ffffff;
+      --ink: #1d1f23;
+      --muted: #626872;
+      --line: #e3e1da;
+      --accent: #3b4fd8;
+      --accent-ink: #ffffff;
+      --ok: #1f7a4d;
+      --ok-bg: #e4f3ea;
+      --bad: #b3261e;
+      --bad-bg: #fbe7e5;
+      --fix: #1d5fb8;
+      --fix-bg: #e5eefb;
+      --warn: #8a5a00;
+      --warn-bg: #fbf0d9;
+      --code: #f0efe9;
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    header { padding: 28px 16px 18px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+    header .wrap { padding: 0; }
+    h1 { margin: 0 0 4px; font-size: 24px; letter-spacing: -0.01em; }
+    .sub { color: var(--muted); margin: 0; max-width: 760px; }
+
+    .mode { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .seg button { border: 0; background: transparent; color: var(--ink); padding: 8px 14px; cursor: pointer; font: inherit; }
+    .seg button.on { background: var(--accent); color: var(--accent-ink); }
+    .seg button:disabled { opacity: .45; cursor: not-allowed; }
+    .hint { color: var(--muted); font-size: 13px; }
+
+    main { padding: 22px 0 60px; }
+    section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+    .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+    .step { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+    h2 { margin: 2px 0 4px; font-size: 19px; }
+    h3 { margin: 18px 0 8px; font-size: 15px; }
+    .what { color: var(--muted); margin: 0; max-width: 680px; }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    button.run, button.ghost {
+      font: inherit; font-weight: 600; border-radius: 10px; padding: 10px 16px; cursor: pointer; white-space: nowrap;
+    }
+    button.run { border: 0; background: var(--accent); color: var(--accent-ink); }
+    button.ghost { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 500; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .out { margin-top: 16px; }
+    .out:empty { display: none; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; }
+    .tablewrap { overflow-x: auto; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+    .chip { background: var(--code); border-radius: 999px; padding: 3px 11px; font-size: 13px; }
+    .chip b { font-weight: 600; }
+
+    .tag { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+    .tag.ok { background: var(--ok-bg); color: var(--ok); }
+    .tag.bad { background: var(--bad-bg); color: var(--bad); }
+    .tag.fix { background: var(--fix-bg); color: var(--fix); }
+    .tag.warn { background: var(--warn-bg); color: var(--warn); }
+    .tag.muted { background: var(--code); color: var(--muted); }
+
+    code, pre { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; }
+    code { background: var(--code); border-radius: 5px; padding: 1px 5px; }
+    pre { background: var(--code); border-radius: 10px; padding: 10px 12px; margin: 8px 0 0; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+
+    /* the run, step by step */
+    .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); margin-left: 8px; }
+    .timeline li { position: relative; padding: 4px 0 12px 20px; }
+    .timeline li::before {
+      content: ""; position: absolute; left: -7px; top: 9px; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--line);
+    }
+    .timeline li.ok::before { border-color: var(--ok); background: var(--ok); }
+    .timeline li.bad::before { border-color: var(--bad); background: var(--bad); }
+    .timeline li.fix::before { border-color: var(--fix); background: var(--fix); }
+    .timeline li.warn::before { border-color: var(--warn); background: var(--warn); }
+    .timeline li.live::before { border-color: var(--accent); animation: pulse 1s infinite alternate; }
+    @keyframes pulse { from { background: var(--surface); } to { background: var(--accent); } }
+    .t { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; margin-right: 6px; }
+    .who { font-weight: 600; }
+    .detail { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+
+    .stages { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .stage { border-radius: 8px; padding: 3px 10px; font-size: 13px; border: 1px solid var(--line); color: var(--muted); }
+    .stage.ok { background: var(--ok-bg); border-color: transparent; color: var(--ok); }
+    .stage.failed { background: var(--bad-bg); border-color: transparent; color: var(--bad); font-weight: 600; }
+    .stage.skipped { opacity: .55; }
+
+    .card { border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
+    .card.ok { background: var(--ok-bg); }
+    .card.bad { background: var(--bad-bg); }
+    .card.warn { background: var(--warn-bg); }
+    .card .big { font-size: 17px; font-weight: 700; }
+
+    .banner { background: var(--warn-bg); color: var(--warn); border-radius: 10px; padding: 8px 12px; font-size: 14px; margin-bottom: 12px; font-weight: 600; }
+    .running { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); animation: pulse 0.8s infinite alternate; }
+
+    .faults { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .fault { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px; cursor: pointer; font: inherit; color: inherit; }
+    .fault.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+    .fault .name { font-weight: 600; }
+    .fault .kind { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+    .expect { margin-top: 12px; border-left: 3px solid var(--accent); padding: 4px 12px; color: var(--ink); font-size: 14px; }
+    .expect b { color: var(--accent); }
+
+    details { margin-top: 10px; }
+    summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+    .md table { margin: 8px 0 14px; }
+    .md h3 { margin-top: 20px; }
+    .md p, .md li { color: var(--ink); }
+    .error { color: var(--bad); font-weight: 600; }
+
+    @media (max-width: 600px) {
+      header { padding: 20px 16px 14px; }
+      section { padding: 16px; }
+      button.run, button.ghost { width: 100%; }
+      .buttons { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Setup Agent — demo (P1)</h1>
+      <p class="sub">The agent that makes the project ready for the other agents: it generates the missing files
+        (Makefile, CI, configuration), tests them on a sample, and fixes its own errors (3 attempts at most).
+        Each button runs the real agent on a copy of the project: nothing is computed in advance.</p>
+      <div class="mode">
+        <span class="hint">Who fixes:</span>
+        <div class="seg" id="mode">
+          <button data-mode="rules" class="on">The rules</button>
+          <button data-mode="llm" id="llmBtn" disabled>The LLM</button>
+        </div>
+        <span class="hint" id="status">checking the models…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Step 1</div>
+          <h2>Analyse the project</h2>
+          <p class="what">The agent reads the code and the data, without changing anything: which script trains, which
+            column to predict, which Python version, which files are missing, and what is wrong in the others' files
+            (reported to their owner, never fixed in their place).</p>
+        </div>
+        <div class="buttons"><button class="run" id="analyseBtn">Analyse</button></div>
+      </div>
+      <div class="out" id="analyseOut"></div>
+    </section>
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Step 2</div>
+          <h2>Build the pipeline</h2>
+          <p class="what">The agent generates the files, then runs a dry run: <code>make all SAMPLE=1</code>
+            on a sample of the data, in a fresh environment. It writes the files only if everything passes.</p>
+        </div>
+        <div class="buttons">
+          <button class="run" id="buildBtn">Build</button>
+          <button class="ghost" id="buildReplay" disabled>Replay the recording</button>
+        </div>
+      </div>
+      <div class="out" id="buildOut"></div>
+    </section>
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Step 3</div>
+          <h2>Break and repair</h2>
+          <p class="what">An error is added to the training script of the copy, then we watch the agent work: it
+            reads the error, tries its rules, searches its memory and the web (Corrective RAG), asks the LLM for a
+            fix, and checks every fix with a new dry run.</p>
+        </div>
+      </div>
+      <div class="faults" id="faults"></div>
+      <div class="expect" id="expect"></div>
+      <div class="buttons" style="margin-top:14px">
+        <button class="run" id="faultBtn" disabled>Break and repair</button>
+        <button class="ghost" id="faultReplay" disabled>Replay the recording</button>
+      </div>
+      <div class="out" id="faultOut"></div>
+    </section>
+
+    <section>
+      <div class="head">
+        <div>
+          <div class="step">Step 4</div>
+          <h2>Evaluation results</h2>
+          <p class="what">The recorded measurements (files in <code>agents/setup/eval/results/</code>): the final test
+            on errors never seen, agent frozen; the cascade; the RAG metrics. 95% confidence intervals.</p>
+        </div>
+        <div class="buttons"><button class="run" id="resultsBtn">Show</button></div>
+      </div>
+      <div class="out" id="resultsOut"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    let mode = "rules", faults = [], fault = null, recordings = [], running = false;
+
+    async function api(path) {
+      const r = await fetch(path);
+      const body = await r.json().catch(() => ({ error: r.statusText }));
+      if (!r.ok) throw new Error(body.error || r.statusText);
+      return body;
+    }
+
+    // ------------------------------------------------------------ status: which models, LLM available or not
+    async function loadStatus() {
+      try {
+        const s = await api("/api/status");
+        recordings = s.recordings || [];
+        const bits = [];
+        if (!s.make) bits.push('<span class="error">make is not found: run the demo in the agent\'s container</span>');
+        if (s.llm) {
+          $("#llmBtn").disabled = false;
+          bits.push("diagnosis: <b>" + esc(s.diagnosis) + "</b>");
+          if (s.escalation) bits.push("cascade: " + esc(s.escalation));
+          bits.push("web search: " + (s.web_search ? "yes" : "no (memory only)"));
+          if (s.ollama === null) bits.push("Ollama does not answer");
+        } else {
+          bits.push("LLM not available: the rules only" + (s.llm_missing ? " (" + esc(s.llm_missing) + ")" : ""));
+        }
+        $("#status").innerHTML = bits.join(" · ");
+        refreshReplays();
+      } catch (e) {
+        $("#status").innerHTML = '<span class="error">server not reachable: ' + esc(e.message) + "</span>";
+      }
+    }
+
+    document.querySelectorAll("#mode button").forEach((b) => b.addEventListener("click", () => {
+      if (b.disabled) return;
+      mode = b.dataset.mode;
+      document.querySelectorAll("#mode button").forEach((x) => x.classList.toggle("on", x === b));
+      refreshReplays();
+    }));
+
+    function hasRecording(action, f) {
+      return recordings.find((r) => r.action === action && (r.fault || null) === (f || null) && r.mode === mode);
+    }
+    function refreshReplays() {
+      $("#buildReplay").disabled = running || !hasRecording("build", null);
+      $("#faultReplay").disabled = running || !fault || !hasRecording("fault", fault.id);
+      $("#faultBtn").disabled = running || !fault;
+      $("#buildBtn").disabled = running;
+    }
+
+    // ------------------------------------------------------------ 1. analyse
+    const SOURCE = { rule: "a rule", llm: "the LLM", assumed: "assumed (no LLM)" };
+    const ITEM = { python: "Python version", train_script: "Training script", target: "Column to predict" };
+    const MODE = { create: ["to create", "fix"], verify: ["exists already: compared", "muted"], team: ["the team's: used", "ok"] };
+    const OWNER = { trainer: "Trainer (P4)", deployer: "Deployer (P5)", checker: "Data Checker (P3)", reviewer: "Reviewer (P2)", monitor: "Monitor (P6)" };
+
+    $("#analyseBtn").addEventListener("click", async () => {
+      const out = $("#analyseOut");
+      out.innerHTML = '<div class="running"><span class="dot"></span>reading the project…</div>';
+      try {
+        const a = await api("/api/analyse");
+        const chips = [["Code", a.code_dir + "/"], ["Python", a.python], ["Training", a.train], ["Target", a.target],
+          ["Columns", a.features], ["Separator", a.separator === ";" ? "semicolon" : a.separator], ["Sample", a.sample_rows + " rows"]];
+        let h = '<div class="chips">' + chips.map(([k, v]) => '<span class="chip">' + esc(k) + ": <b>" + esc(v) + "</b></span>").join("") + "</div>";
+        h += "<h3>The choices</h3><div class=\"tablewrap\"><table><tr><th>Choice</th><th>Value</th><th>Decided by</th><th>Why</th></tr>";
+        for (const d of a.decisions) {
+          const by = d.status === "needs_llm" ? '<span class="tag warn">left to the LLM</span>' : '<span class="tag ' + (d.source === "llm" ? "fix" : "ok") + '">' + esc(SOURCE[d.source] || d.source) + "</span>";
+          h += "<tr><td>" + esc(ITEM[d.item] || d.item) + "</td><td><code>" + esc(d.value) + "</code></td><td>" + by + "</td><td class=\"hint\">" + esc(d.why) + "</td></tr>";
+        }
+        h += "</table></div><h3>The files</h3><div class=\"tablewrap\"><table><tr><th>File</th><th>What the agent does</th></tr>";
+        for (const f of a.files) {
+          const [txt, cls] = MODE[f.mode] || [f.mode, "muted"];
+          h += "<tr><td><code>" + esc(f.path) + '</code></td><td><span class="tag ' + cls + '">' + esc(txt) + "</span></td></tr>";
+        }
+        h += "</table></div>";
+        h += "<h3>What it reports to the others (" + a.findings.length + ")</h3>";
+        if (!a.findings.length) h += '<p class="hint">Nothing: the teammates\u2019 files are consistent.</p>';
+        else {
+          h += "<div class=\"tablewrap\"><table><tr><th>Problem</th><th>File</th><th>To be fixed by</th></tr>";
+          for (const f of a.findings) h += "<tr><td>" + esc(f.message) + "</td><td><code>" + esc(f.path) + "</code></td><td>" + esc(OWNER[f.owner] || f.owner || "the team") + "</td></tr>";
+          h += "</table></div>";
+        }
+        if (a.extra.length) h += '<p class="hint">Packages the code uses but nobody declares: ' + a.extra.map((p) => "<code>" + esc(p) + "</code>").join(" ") + " (added by the Makefile).</p>";
+        out.innerHTML = h;
+      } catch (e) { out.innerHTML = '<p class="error">' + esc(e.message) + "</p>"; }
+    });
+
+    // ------------------------------------------------------------ 2 and 3. a run, live or replayed
+    const CRAG = {
+      correct: ["the memory has a matching case", "ok"],
+      ambiguous: ["memory unsure: memory + web search", "warn"],
+      incorrect: ["nothing relevant in memory: web search", "warn"],
+      off: ["without Corrective RAG", "muted"],
+    };
+
+    function domain(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } }
+
+    function item(e, live) {
+      const t = '<span class="t">' + e.t.toFixed(1) + " s</span>";
+      const li = (cls, who, body) => '<li class="' + cls + (live ? " live" : "") + '">' + t + '<span class="who">' + who + "</span>" + (body || "") + "</li>";
+      switch (e.type) {
+        case "start":
+          return li("", e.mode === "llm" ? "LLM mode" : "Rules-only mode", '<div class="detail">' + (e.mode === "llm"
+            ? "diagnosis by <b>" + esc(e.diagnosis) + "</b>" + (e.escalation ? ", cascade to " + esc(e.escalation) : "") + (e.web ? ", web search possible" : ", no web search")
+            : "no LLM, no memory: only the hand-written rules") + "</div>");
+        case "copy": return li("", "Copy of the project", '<div class="detail">' + esc(e.text) + "</div>");
+        case "inject":
+          return li("bad", "Error added: " + esc(e.label), '<div class="detail">' + esc(e.what) + " (" + esc(e.where) + ")</div><pre>" + esc(e.code) + "</pre>");
+        case "plan": {
+          const ds = e.decisions.map((d) => esc(ITEM[d.item] || d.item) + " <code>" + esc(d.value) + "</code>").join(", ");
+          return li("", "Plan", '<div class="detail">' + ds + (e.llm_calls ? " — decided by the LLM (" + e.llm_calls + " call" + (e.llm_calls > 1 ? "s" : "") + ")" : " — all decided by the rules") +
+            (e.files.length ? "<br>to create: " + e.files.map((f) => "<code>" + esc(f) + "</code>").join(" ") : "") + "</div>");
+        }
+        case "build": return li("", "Dry run #" + e.n, '<div class="detail"><code>make all SAMPLE=1</code> on the sample, fresh environment…</div>');
+        case "build_done": {
+          const st = '<div class="stages">' + e.stages.map((s) => '<span class="stage ' + s.state + '">' + esc(s.label) + "</span>").join("") + "</div>";
+          if (e.ok) return li("ok", "Dry run #" + e.n + ": passed", '<div class="detail">in ' + esc(e.seconds) + " s</div>" + st);
+          return li("bad", "Dry run #" + e.n + ": failed at the “" + esc((e.stages.find((s) => s.state === "failed") || {}).label || e.stage) + "” stage",
+            '<div class="detail"><code>' + esc(e.error_class) + "</code>" + (e.detail ? " " + esc(e.detail) : "") + "</div>" + st + (e.error.length ? "<pre>" + esc(e.error.join("\n")) + "</pre>" : ""));
+        }
+        case "rule":
+          if (e.text) return li("fix", "A rule knows this error", '<div class="detail">' + esc(e.text) + "</div>");
+          return li("warn", "No rule knows this error", '<div class="detail">' + (e.llm ? "the LLM is asked" : "and no LLM in this mode: the agent stops and reports") + "</div>");
+        case "ask":
+          return li("", (e.escalated ? "Cascade: asking the second model " : "Asking the model ") + "<code>" + esc(e.model) + "</code>",
+            '<div class="detail">with the error, the plan, the fixes already tried, and what the memory or the web say</div>');
+        case "diagnosis": {
+          let b = "";
+          if (e.crag) {
+            const [txt, cls] = CRAG[e.crag] || [e.crag, "muted"];
+            b += '<div class="detail">Corrective RAG: <span class="tag ' + cls + '">' + esc(txt) + "</span>";
+            if (e.graded && e.graded.length) b += " — memory cases graded: " + e.graded.map((g) => esc(g.id) + " " + g.score + (g.kept ? " ✓" : "")).join(", ");
+            if (e.web && e.web.length) b += "<br>web pages read: " + e.web.map((u) => esc(domain(u))).join(", ") + (e.web_source === "cache" ? " (cache)" : "");
+            b += "</div>";
+          }
+          if (e.rejected && e.rejected.length) b += '<div class="detail">' + e.rejected.length + " answer(s) rejected by the validator: " + e.rejected.map(esc).join(" ; ") + "</div>";
+          if (e.give_up) return li("warn", "The model gives up", b + '<div class="detail">' + esc(e.reason || e.text) + "</div>");
+          if (!e.valid) return li("bad", "No valid answer", b + '<div class="detail">' + esc(e.text) + "</div>");
+          return li("fix", "Proposed fix: <code>" + esc(e.text) + "</code>", b + (e.reason ? '<div class="detail">why: ' + esc(e.reason) + "</div>" : "") + '<div class="detail">→ checked by a new dry run</div>');
+        }
+        case "error": return li("bad", "Demo error", '<div class="detail">' + esc(e.text) + "</div>");
+        default: return "";
+      }
+    }
+
+    function finalCard(r, faultObj) {
+      if (!r) return "";
+      if (r.error) return '<div class="card bad"><div class="big">The demo failed</div><div>' + esc(r.error) + "</div></div>";
+      if (r.not_broken) return '<div class="card warn"><div class="big">This error does not break this project</div><div>The first dry run passed: ' +
+        "the installed versions still accept this code, there was nothing to repair. Choose another error.</div></div>";
+      const fixes = r.fixes.length ? "<br>fixes: " + r.fixes.map((f) => "<code>" + esc(f) + "</code>").join(", ") : "";
+      let h;
+      if (r.ok) h = '<div class="card ok"><div class="big">Pipeline ready</div><div>' + esc(r.summary) + fixes +
+        (r.created && r.created.length ? "<br>files created: " + r.created.map((f) => "<code>" + esc(f) + "</code>").join(" ") : "") + "</div>";
+      else h = '<div class="card ' + (r.right ? "warn" : "bad") + '"><div class="big">Reported to a human (setup_failed)</div><div>' + esc(r.summary) +
+        (r.why ? "<br>reason: " + esc(r.why) : "") + fixes + "</div>";
+      if (faultObj) h += '<div style="margin-top:8px"><span class="tag ' + (r.right ? "ok" : "bad") + '">' + (r.right ? "✓ right behaviour" : "✗ not the expected behaviour") + "</span> " +
+        '<span class="hint">expected: ' + (r.expect === "build" ? "repair and build" : "report without repairing") + "</span></div>";
+      h += "</div>";
+      if (r.makefile) h += "<details><summary>See the generated Makefile</summary><pre>" + esc(r.makefile) + "</pre></details>";
+      return h;
+    }
+
+    function render(out, events, done, result, header, faultObj, elapsed) {
+      let h = header || "";
+      if (!done) h += '<div class="running"><span class="dot"></span>running… ' + (elapsed != null ? Math.round(elapsed) + " s" : "") + "</div>";
+      h += '<ul class="timeline">' + events.map((e, i) => item(e, !done && i === events.length - 1)).join("") + "</ul>";
+      if (done) h += finalCard(result, faultObj);
+      out.innerHTML = h;
+    }
+
+    function lock(on) { running = on; $("#analyseBtn").disabled = on; refreshReplays(); }
+
+    async function live(action, out) {
+      const f = action === "fault" ? fault : null;
+      lock(true);
+      out.innerHTML = '<div class="running"><span class="dot"></span>starting…</div>';
+      try {
+        const q = "action=" + action + "&mode=" + mode + (f ? "&fault=" + f.id : "");
+        let job = await api("/api/run?" + q);
+        let events = job.events;
+        while (!job.done) {
+          render(out, events, false, null, "", f, job.elapsed);
+          await new Promise((r) => setTimeout(r, 700));
+          job = await api("/api/job?id=" + job.id + "&since=" + events.length);
+          events = events.concat(job.events);
+        }
+        render(out, events, true, job.result, "", f);
+      } catch (e) { out.innerHTML = '<p class="error">' + esc(e.message) + "</p>"; }
+      await loadStatus();
+      lock(false);
+    }
+
+    async function replay(action, out) {
+      const f = action === "fault" ? fault : null;
+      lock(true);
+      try {
+        const rec = await api("/api/replay?action=" + action + "&mode=" + mode + (f ? "&fault=" + f.id : ""));
+        const when = new Date(rec.saved_at).toLocaleString("en-GB");
+        const banner = '<div class="banner">Replay of a real run recorded on ' + esc(when) + " — this is not a live run.</div>";
+        const shown = [];
+        for (let i = 0; i < rec.events.length; i++) {
+          shown.push(rec.events[i]);
+          render(out, shown, false, null, banner, f, rec.events[i].t);
+          const next = rec.events[i + 1];
+          await new Promise((r) => setTimeout(r, next ? Math.min(1400, Math.max(350, (next.t - rec.events[i].t) * 120)) : 300));
+        }
+        render(out, shown, true, rec.result, banner, f);
+      } catch (e) { out.innerHTML = '<p class="error">' + esc(e.message) + "</p>"; }
+      lock(false);
+    }
+
+    $("#buildBtn").addEventListener("click", () => live("build", $("#buildOut")));
+    $("#buildReplay").addEventListener("click", () => replay("build", $("#buildOut")));
+    $("#faultBtn").addEventListener("click", () => live("fault", $("#faultOut")));
+    $("#faultReplay").addEventListener("click", () => replay("fault", $("#faultOut")));
+
+    async function loadFaults() {
+      faults = (await api("/api/faults")).faults;
+      $("#faults").innerHTML = faults.map((f) => '<button class="fault" data-id="' + esc(f.id) + '"><div class="name">' + esc(f.label) +
+        '</div><div class="kind">' + (f.expect === "report" ? "to report, not to repair" : f.needs_llm ? "no rule: needs the LLM" : "a rule is enough") + "</div></button>").join("");
+      document.querySelectorAll(".fault").forEach((b) => b.addEventListener("click", () => {
+        if (running) return;
+        fault = faults.find((f) => f.id === b.dataset.id);
+        document.querySelectorAll(".fault").forEach((x) => x.classList.toggle("on", x === b));
+        $("#expect").innerHTML = esc(fault.what) + "<pre>" + esc(fault.code) + "</pre><div style=\"margin-top:8px\"><b>What we expect:</b> " + esc(fault.expected) + "</div>";
+        refreshReplays();
+      }));
+      $("#expect").innerHTML = '<span class="hint">Choose an error.</span>';
+    }
+
+    // ------------------------------------------------------------ 4. results (a small markdown renderer)
+    function inline(s) {
+      return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+    }
+    function md(text) {
+      const lines = text.split("\n"), out = [];
+      let i = 0;
+      while (i < lines.length) {
+        const l = lines[i];
+        if (/^\|/.test(l)) {
+          const rows = [];
+          while (i < lines.length && /^\|/.test(lines[i])) rows.push(lines[i++]);
+          const cells = (r) => r.replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+          let t = '<div class="tablewrap"><table><tr>' + cells(rows[0]).map((c) => "<th>" + inline(c) + "</th>").join("") + "</tr>";
+          for (const r of rows.slice(2)) t += "<tr>" + cells(r).map((c) => "<td>" + inline(c) + "</td>").join("") + "</tr>";
+          out.push(t + "</table></div>");
+          continue;
+        }
+        if (/^### /.test(l)) out.push("<h3>" + inline(l.slice(4)) + "</h3>");
+        else if (/^## /.test(l)) out.push("<h3>" + inline(l.slice(3)) + "</h3>");
+        else if (/^- /.test(l)) {
+          const items = [];
+          while (i < lines.length && /^- /.test(lines[i])) items.push("<li>" + inline(lines[i++].slice(2)) + "</li>");
+          out.push("<ul>" + items.join("") + "</ul>");
+          continue;
+        } else if (l.trim()) out.push("<p>" + inline(l) + "</p>");
+        i++;
+      }
+      return out.join("");
+    }
+
+    $("#resultsBtn").addEventListener("click", async () => {
+      const out = $("#resultsOut");
+      try {
+        const r = await api("/api/results");
+        let h = "";
+        const part = (title, intro, key) => {
+          if (!r[key]) return;
+          h += '<h3 style="font-size:17px">' + title + '</h3><p class="hint">' + intro + '</p><div class="md">' + md(r[key]) + "</div>";
+        };
+        part("The final test", "17 errors never seen before (library versions that removed a function), drawn at random from an external set; the agent was frozen before. rules = the rules alone; llm_crag = the base model with Corrective RAG; llm_sft = the fine-tuned model (QLoRA) with Corrective RAG.", "team_eval_final");
+        part("The cascade", "A second draw of 16 errors never seen: the fine-tuned model first, then the API model when it fails (llm_cascade).", "team_eval_cascade");
+        part("The RAG", "Measured on every diagnosis of the evaluation cases: does the memory find the right case (recall@3), and does the Corrective RAG judge keep the right ones?", "rag");
+        out.innerHTML = h || '<p class="hint">No result file found.</p>';
+      } catch (e) { out.innerHTML = '<p class="error">' + esc(e.message) + "</p>"; }
+    });
+
+    loadStatus();
+    loadFaults();
+  </script>
+</body>
+
+</html>

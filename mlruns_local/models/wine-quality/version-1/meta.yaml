@@ -1,0 +1,16 @@
+creation_timestamp: 1792667214269
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1792667214269
+model_id: m-b56599535ae746cab0147f0307c3cfd9
+name: wine-quality
+run_id: f7866d44883a4039be12795c1f61b239
+run_link: null
+source: models:/m-b56599535ae746cab0147f0307c3cfd9
+status: READY
+status_message: null
+storage_location: file:C:/Users/mahab/Pi-Mlops/mlruns_local/943112200703484454/models/m-b56599535ae746cab0147f0307c3cfd9/artifacts
+user_id: null
+version: 1
+workspace: default

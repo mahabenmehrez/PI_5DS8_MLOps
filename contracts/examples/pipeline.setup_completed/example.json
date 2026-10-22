@@ -1,0 +1,35 @@
+{
+  "id": "msg-5e7a1c2b9d01",
+  "time": "2026-10-16T18:00:00+00:00",
+  "type": "finding",
+  "kind": "pipeline.setup_completed",
+  "sender": "setup",
+  "to": [],
+  "topic": "pipeline:setup",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 1,
+  "confidence": 1.0,
+  "summary": "Stub: pipeline ready for baseline (sample files), commit 0000000",
+  "evidence": {
+    "stages_passed": 9,
+    "fix_attempts": 0
+  },
+  "payload": {
+    "repo": "baseline",
+    "commit": "0000000000000000000000000000000000000000",
+    "files": {
+      "Makefile": "baseline/Makefile",
+      "ci": ".github/workflows/pipeline.yml",
+      "schema": "samples/schema.py",
+      "agents_yaml": "samples/agents.yaml",
+      "dependency_map": "samples/dependency_map.yaml"
+    },
+    "agents_yaml": "samples/agents.yaml",
+    "schema_path": "samples/schema.py",
+    "depmap_seeded": true
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

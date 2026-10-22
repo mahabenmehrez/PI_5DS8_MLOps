@@ -1,0 +1,17 @@
+# Faute serving : pic de trafic x5 (reel : 30 secondes).
+# Lu par harness/fault_runner.py (P3) : start.after_batches et duration.batches sont obligatoires.
+# Pour le Deployer, un "batch" = une heure simulee de trafic ; la faute vise l'etape 10 % du deploiement.
+id: serving.traffic_surge
+layer: serving                          # code | data | model | serving | monitoring
+author: P5
+target: {factor: 5, duration_s: 30, max_requests: 500}
+start: {after_batches: 10}
+duration: {batches: 3}
+applies_to: [requests]
+inject: harness.faults.serving:inject_surge
+revert: harness.faults.serving:revert_surge
+expected:
+  owner: deployer
+  root_cause_node: "deployment:prod"
+  acceptable_actions: [hold, rollback, rollback_emergency, advance_stage]
+  must_not: [promote_100]

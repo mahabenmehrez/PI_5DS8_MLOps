@@ -1,0 +1,17 @@
+# A COPIER dans la section "agents:" du agents.yaml de l'equipe (proprietaire : P1).
+# Les valeurs sont des points de depart : mesurer, puis ajuster.
+agents:
+  deployer:
+    subscriptions: ["model:*", "deployment:*", "expected_change:*"]
+    thresholds:
+      p95_ms: 300              # limite dure de latence (rollback d'urgence)
+      error_rate: 0.05         # limite dure d'erreurs (rollback d'urgence)
+      hard_minutes: 2          # minutes de suite avant rollback d'urgence
+      shadow_min: 300          # predictions shadow avant de quitter le shadow
+      shadow_min_labelled: 100 # dont avec labels
+      stage_min_minutes: 30    # minutes simulees minimum a 10 % et 50 %
+      stage_min_requests: 150  # requetes candidat minimum a 10 % et 50 %
+      latency_ratio: 1.2       # p95 candidat <= 1.2 x p95 champion ...
+      latency_floor_ms: 10.0   # ... ou champion + 10 ms (plancher)
+      error_delta: 0.005       # erreurs candidat <= champion + 0.5 point
+      alpha: 0.05              # test de Mann-Whitney unilateral

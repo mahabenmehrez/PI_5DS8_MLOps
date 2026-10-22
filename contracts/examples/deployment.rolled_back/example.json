@@ -1,0 +1,30 @@
+{
+  "id": "msg-eb1a93612b30",
+  "time": "2026-10-15T19:49:46.684388+00:00",
+  "type": "finding",
+  "kind": "deployment.rolled_back",
+  "sender": "deployer",
+  "to": [],
+  "topic": "deployment:prod",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Stub rolled back from 2 to 1",
+  "evidence": {
+    "p95_ms": 420.0
+  },
+  "payload": {
+    "from_version": "2",
+    "to_version": "1",
+    "trigger": {
+      "metric": "p95_ms",
+      "value": 420.0,
+      "limit": 300.0
+    },
+    "automatic": true
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

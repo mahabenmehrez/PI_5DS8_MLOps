@@ -1,0 +1,17 @@
+# what never goes into the agents image (docker build context)
+.git
+.env
+**/.env
+# the data folder is NOT ignored: the Trainer's image copies it (agents/trainer/Dockerfile);
+# it is the public wine data (the team commits it)
+**/mlruns/
+**/mlartifacts/
+**/__pycache__/
+**/.pytest_cache/
+.venv/
+venv/
+.setup/
+agents/setup/logs/
+agents/setup/.cache/
+agents/setup/memory/
+*.pdf

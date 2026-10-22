@@ -1,0 +1,25 @@
+{{ marker }}
+# Dependency-map seed (Setup Agent): code -> feature -> dataset -> model -> deployment (roadmap 5.6).
+# "computes" links come from the code: a file computes a feature when it names that column.
+owners:
+{% for path in plan.computes %}
+  code:{{ path }}: reviewer
+{% endfor %}
+{% for c in plan.columns %}
+  feature:{{ c.name }}: checker
+{% endfor %}
+  dataset:reference: checker
+  model:wine-quality@champion: trainer
+  deployment:prod: deployer
+
+links:
+{% for path, features in plan.computes.items() %}
+{% for f in features %}
+  - {src: "code:{{ path }}", dst: "feature:{{ f }}", relation: computes}
+{% endfor %}
+{% endfor %}
+{% for c in plan.columns %}
+  - {src: "feature:{{ c.name }}", dst: "dataset:reference", relation: column_of}
+{% endfor %}
+  - {src: "dataset:reference", dst: "model:wine-quality@champion", relation: trained_on}
+  - {src: "model:wine-quality@champion", dst: "deployment:prod", relation: serves}

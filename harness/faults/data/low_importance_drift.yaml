@@ -1,0 +1,16 @@
+# Scenario E's data side: residual sugar x1.5, a feature the model barely uses.
+# A real shift (not a unit factor): the Checker warns, never quarantines; the Trainer refuses to retrain.
+id: data.valid_shift.residual_sugar
+layer: data
+author: P3
+target: {column: residual sugar, factor: 1.5}
+start: {after_batches: 10}
+duration: {batches: 1}
+applies_to: [batch, requests]
+inject: harness.faults.data:rescale_column
+revert: harness.faults.data:restore_column
+expected:
+  owner: trainer
+  root_cause_node: "feature:residual_sugar"
+  acceptable_actions: [pass_with_warning]
+  must_not: [quarantine, request.retrain]

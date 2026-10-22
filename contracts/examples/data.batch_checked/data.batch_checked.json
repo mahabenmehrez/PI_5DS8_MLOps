@@ -1,0 +1,34 @@
+{
+  "id": "msg-2232a84fd549",
+  "time": "2026-03-14T01:00:00Z",
+  "type": "finding",
+  "kind": "data.batch_checked",
+  "sender": "checker",
+  "to": [
+    "trainer",
+    "monitor"
+  ],
+  "topic": "dataset:batch-0001",
+  "incident_id": null,
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Batch batch-0001 passed",
+  "evidence": {
+    "psi": {},
+    "isolation": null,
+    "findings": []
+  },
+  "payload": {
+    "batch_id": "batch-0001",
+    "status": "passed",
+    "rows": 100,
+    "failed_checks": [],
+    "psi": {},
+    "repair": [],
+    "clean_path": "C:\\Users\\jalle\\AppData\\Local\\Temp\\scenario_C_dq7x0p03\\batches\\batch-0001.parquet"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

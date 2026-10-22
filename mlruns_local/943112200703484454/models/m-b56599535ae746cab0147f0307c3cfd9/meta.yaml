@@ -1,0 +1,10 @@
+artifact_location: file:C:/Users/mahab/Pi-Mlops/mlruns_local/943112200703484454/models/m-b56599535ae746cab0147f0307c3cfd9/artifacts
+creation_timestamp: 1792667209470
+experiment_id: '943112200703484454'
+last_updated_timestamp: 1792667214157
+model_id: m-b56599535ae746cab0147f0307c3cfd9
+model_type: null
+name: model
+source_run_id: f7866d44883a4039be12795c1f61b239
+status: 2
+status_message: null

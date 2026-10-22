@@ -1,0 +1,162 @@
+# contracts.yaml — shared agreements for the six-agent MLOps pipeline (v1)
+#
+# This file says WHERE things are: commands, ports, files, owners.
+# It does not say how any agent works inside.
+# The Builder reads it to generate the pipeline; every other agent reads it
+# to know where to look. Need something different? Change the line here and
+# tell the team. Never hard-code these values in agent code.
+
+contract_version: 1
+
+# ---------------------------------------------------------------- project
+project:
+  main_repo: mlops-zoomcamp-project   # github.com/jelambrar96-datatalks/mlops-zoomcamp-project (held-out test for the Builder)
+  dev_repos: [taxi-trip-regression]   # Builder development only
+  python_version: auto       # Builder picks it from the repo; set e.g. "3.11" to force one
+
+# ---------------------------------------------------------------- serving
+# The model runs as a small web service that answers prediction requests. Its API (port, endpoints,
+# fields, error rule) is agreed with the Deployer and the Monitor: see integration.deployer below.
+serving:
+  mode: auto                 # auto: use the repo's own API if it has one, otherwise the Builder generates one
+
+# ---------------------------------------------------------------- commands
+# Fixed command names. What runs behind each one is the Builder's job. Renaming one is a contract
+# change (the Builder's code knows these roles), not an integration field. The descriptions name
+# paths.* and serving.port: their values are in the integration section (load_contracts fills them).
+make_targets:
+  install:  install dependencies
+  data:     build features from raw data into paths.processed_data
+  train:    train a model and log it to MLflow                     # used by Trainer
+  evaluate: evaluate a model and write paths.eval_report           # used by Trainer
+  serve:    start the model service on serving.port                # used by Deployer
+  test:     run the smoke test
+  all:      install, data, train, evaluate, test in order
+sample_mode:
+  variable: SAMPLE           # `make all SAMPLE=1` runs on a small slice of the data (fast tests)
+  fraction: 0.01
+
+# ---------------------------------------------------------------- files and folders (the Builder's own)
+paths:
+  models: models
+  adapters_dir: pipeline     # Builder's adapter scripts in the target repo (train.py, evaluate.py, serve.py, data.py, sample_request.json)
+
+# ---------------------------------------------------------------- containers
+compose:
+  base_file: compose.base.yml       # Builder: model services, MLflow, message board
+  data: mounted                     # data is mounted into containers, never copied into images
+
+# ---------------------------------------------------------------- "it works"
+# The Builder's build is finished only when all of these pass (the prediction field: integration.deployer).
+smoke_test:
+  health_status: 200
+  predict_status: 2xx
+  predict_body_has_not: error
+
+# ---------------------------------------------------------------- ownership
+# Who maintains each file after the Builder creates it.
+ownership:
+  Makefile: builder
+  Dockerfile: builder
+  .dockerignore: builder
+  compose.base.yml: builder
+  compose.deploy.yml: deployer
+  router.yaml: deployer
+  .github/workflows/ci.yml: builder    # what blocks a pull request is the Reviewer's decision
+  schema.py: inspector                 # Builder writes a first draft only
+  agents.yaml: board                   # Builder writes it once
+  lineage_map: [reviewer, trainer]     # Builder creates it
+  pipeline/: builder                   # adapter scripts (paths.adapters_dir)
+  contracts.yaml: team
+
+# ---------------------------------------------------------------- integration
+# Every value that depends on another agent or on the team, grouped by who confirms it.
+# Each field is {value, default, confirmed}:
+#   value      what the Builder uses now (change it when the teammate answers);
+#   default    the Builder's working default, so it runs on its own before anyone answers;
+#   confirmed  false until that teammate has confirmed the value (even if it equals the default).
+# The questions to ask, per field: docs/INTEGRATION.md. Fields still unconfirmed:
+#   python -m builder_agent.integration
+# Nothing listed here may be hard-coded in the Builder's code (tests/test_integration.py).
+integration:
+  monitor:
+    predictions_log:          {value: logs/predictions.jsonl, default: logs/predictions.jsonl, confirmed: false}   # one JSON line per prediction, written by the model service
+    predictions_log_fields:   # the line's keys (Builder's name -> key in the file): time ISO-8601, model_version, features by name, prediction, request_id to join late labels
+      value:   {time: time, model_version: model_version, features: features, prediction: prediction, request_id: request_id}
+      default: {time: time, model_version: model_version, features: features, prediction: prediction, request_id: request_id}
+      confirmed: false
+  trainer:
+    eval_report:              {value: reports/eval.json, default: reports/eval.json, confirmed: false}   # written by `make evaluate`
+    eval_report_fields:       # top-level keys of the eval report (Builder's name -> key in the file); per_group: {group: {metric: float, n: int}}
+      value:   {model_version: model_version, task: task, metrics: metrics, per_group: per_group}
+      default: {model_version: model_version, task: task, metrics: metrics, per_group: per_group}
+      confirmed: false
+    eval_metrics:             {value: [rmse, mae, r2], default: [rmse, mae, r2], confirmed: false}   # regression metrics in the report (supported: rmse, mae, r2)
+    eval_classification_metrics: {value: [accuracy, f1_macro, roc_auc], default: [accuracy, f1_macro, roc_auc], confirmed: false}   # roc_auc only for binary models with predict_proba
+    latest_model_uri:         {value: models/latest_model_uri.txt, default: models/latest_model_uri.txt, confirmed: false}   # written by `make train`: the MLflow URI of the new model
+    mlflow_experiment:        {value: mlops-zoomcamp-experiment, default: mlops-zoomcamp-experiment, confirmed: false}   # "auto": one experiment per repo, named after it
+    train_command:            {value: make train, default: make train, confirmed: false}
+    evaluate_command:         {value: make evaluate, default: make evaluate, confirmed: false}
+  inspector:
+    raw_data:                 {value: data/raw, default: data/raw, confirmed: false}
+    processed_data:           {value: data/processed, default: data/processed, confirmed: false}
+    schema_path:              {value: schema.py, default: schema.py, confirmed: false}   # the Pandera schema draft (not generated yet: ROADMAP B7)
+  deployer:
+    serving_port:             {value: 8000, default: 8000, confirmed: false}   # every agent calls the model on this port
+    endpoints:
+      value:   {predict: {method: POST, path: /predict}, health: {method: GET, path: /health}}
+      default: {predict: {method: POST, path: /predict}, health: {method: GET, path: /health}}
+      confirmed: false
+    request_format:           {value: json, default: json, confirmed: false}   # one record per request, features by name, never by position
+    prediction_field:         {value: prediction, default: prediction, confirmed: false}
+    model_version_field:      {value: model_version, default: model_version, confirmed: false}
+    error_status:             {value: 4xx_or_5xx, default: 4xx_or_5xx, confirmed: false}   # an error never comes back as HTTP 200
+    model_uri_env:            {value: MODEL_URI, default: MODEL_URI, confirmed: false}   # the service loads its model from MLflow using this variable
+    serve_command:            {value: make serve, default: make serve, confirmed: false}
+    current_service:          {value: serving-current, default: serving-current, confirmed: false}   # compose service of the live model
+    candidate_service:        {value: serving-candidate, default: serving-candidate, confirmed: false}
+    deploy_file:              {value: compose.deploy.yml, default: compose.deploy.yml, confirmed: false}   # the Deployer's compose file (router, replicas, traffic split)
+    router_config:            {value: router.yaml, default: router.yaml, confirmed: false}
+    candidate_and_router:     {value: false, default: false, confirmed: false}   # true: the Builder adds the candidate container and router (not implemented yet: ROADMAP D)
+  board:
+    url:                      {value: "http://board:8000", default: "http://board:8000", confirmed: false}   # the message board every agent posts to
+    image:                    {value: "", default: "", confirmed: false}   # empty: no board service in compose until the board owner provides an image
+    agents_file:              {value: agents.yaml, default: agents.yaml, confirmed: false}
+    subscriptions:            # topics each agent receives (architecture page)
+      value:
+        builder: ["pipeline:*"]
+        reviewer: ["code:*", "feature:*"]
+        inspector: ["dataset:*", "feature:*", "type:question"]
+        trainer: ["dataset:*", "model:*"]
+        deployer: ["model:*", "deployment:*"]
+        monitor: ["feature:*", "model:*", "expected_change:*"]
+      default:
+        builder: ["pipeline:*"]
+        reviewer: ["code:*", "feature:*"]
+        inspector: ["dataset:*", "feature:*", "type:question"]
+        trainer: ["dataset:*", "model:*"]
+        deployer: ["model:*", "deployment:*"]
+        monitor: ["feature:*", "model:*", "expected_change:*"]
+      confirmed: false
+  reviewer:
+    builder_commit_author:    {value: "Builder agent <builder@localhost>", default: "Builder agent <builder@localhost>", confirmed: false}   # author of the create command's commit on builder/<date>
+    ci_workflow:              {value: .github/workflows/ci.yml, default: .github/workflows/ci.yml, confirmed: false}   # what blocks a pull request is the Reviewer's decision
+  team:
+    mlflow_uri:               {value: "http://mlflow:5000", default: "http://mlflow:5000", confirmed: false}   # tracking server, as the containers see it
+    mlflow_server_image:      {value: "ghcr.io/mlflow/mlflow:v2.17.2", default: "ghcr.io/mlflow/mlflow:v2.17.2", confirmed: false}   # the client is pinned to its tag (fault-001)
+  layout:                     # team mode (python -m agents.setup.builder_agent.team): where things are in the team repo, roadmap 5.2 / 7.1
+    code_dir:                 {value: baseline, default: baseline, confirmed: false}   # the wine project's code
+    data_path:                {value: data/winequality-red.csv, default: data/winequality-red.csv, confirmed: false}   # not in git: `make data` downloads it
+    data_url:                 {value: "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", default: "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", confirmed: false}
+    config_sample:            {value: samples/agents.yaml, default: samples/agents.yaml, confirmed: false}   # the hand-made sample the generated agents.yaml must match
+    makefile:                 {value: baseline/Makefile, default: baseline/Makefile, confirmed: false}   # the root Makefile is the team runner (contract-test, solo, scenario, experiment)
+    ci:                       {value: .github/workflows/pipeline.yml, default: .github/workflows/pipeline.yml, confirmed: false}   # roadmap 7.1
+    schema_file:              {value: pipeline/schema.py, default: pipeline/schema.py, confirmed: false}   # generated only when the team has no schema
+    team_schema:              {value: samples/schema.py, default: samples/schema.py, confirmed: false}   # the Data Checker's schema (owner P3): used by make test when it exists
+    depmap:                   {value: pipeline/dependency_map.yaml, default: pipeline/dependency_map.yaml, confirmed: false}
+    agents_yaml:              {value: agents.yaml, default: agents.yaml, confirmed: false}
+    tests_dir:                {value: baseline/tests, default: baseline/tests, confirmed: false}   # the ML project's own tests (make test); the team's tests/ run in CI
+
+# ---------------------------------------------------------------- team repository
+team_repo:
+  layout: monorepo           # one repository: shared/ for common code, agents/<name>/ for each agent

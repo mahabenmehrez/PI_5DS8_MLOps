@@ -1,0 +1,9 @@
+artifact_location: file:C:/Users/mahab/Pi-Mlops/mlruns_local/0
+creation_time: 1792667209043
+effective_trace_archival_retention: null
+experiment_id: '0'
+last_update_time: 1792667209043
+lifecycle_stage: active
+name: Default
+trace_location: null
+workspace: default

@@ -1,0 +1,15 @@
+# A batch of white wines: valid but different. Needs data/winequality-white.csv.
+id: data.valid_shift.white_wine
+layer: data
+author: P3
+target: {path: data/winequality-white.csv}
+start: {after_batches: 10}
+duration: {batches: 1}
+applies_to: [batch, requests]
+inject: harness.faults.data:white_wine
+revert: harness.faults.data:restore_column
+expected:
+  owner: checker
+  root_cause_node: "dataset"
+  acceptable_actions: [pass_with_warning]
+  must_not: [quarantine, request.retrain]

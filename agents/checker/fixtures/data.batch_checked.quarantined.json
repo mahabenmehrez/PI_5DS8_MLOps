@@ -1,0 +1,64 @@
+{
+  "id": "msg-588fad83b80c",
+  "time": "2026-03-14T11:00:00Z",
+  "type": "finding",
+  "kind": "data.batch_checked",
+  "sender": "checker",
+  "to": [
+    "trainer",
+    "monitor"
+  ],
+  "topic": "dataset:batch-0011",
+  "incident_id": "inc-48ca07d3",
+  "reply_to": null,
+  "level": 1,
+  "confidence": null,
+  "summary": "Batch batch-0011 quarantined: unit_change:total sulfur dioxide, schema_range:total sulfur dioxide",
+  "evidence": {
+    "psi": {},
+    "isolation": {
+      "score": -0.5205,
+      "floor": -0.5572,
+      "anomaly": false
+    },
+    "findings": [
+      {
+        "check": "unit_change",
+        "column": "total sulfur dioxide",
+        "level": "alert",
+        "weight": 0.5,
+        "score": 1.0,
+        "evidence": {
+          "median_ratio": 0.0011,
+          "factor": 0.001
+        }
+      },
+      {
+        "check": "schema_range",
+        "column": "total sulfur dioxide",
+        "level": "alert",
+        "weight": 0.5,
+        "score": 1.0,
+        "evidence": {
+          "rate": 1.0,
+          "pandera_check": "in_range(1.0, 450.0)"
+        }
+      }
+    ]
+  },
+  "payload": {
+    "batch_id": "batch-0011",
+    "status": "quarantined",
+    "rows": 100,
+    "failed_checks": [
+      "unit_change:total sulfur dioxide",
+      "schema_range:total sulfur dioxide"
+    ],
+    "psi": {},
+    "repair": [],
+    "clean_path": "C:\\Users\\jalle\\AppData\\Local\\Temp\\scenario_C_dq7x0p03\\checker\\quarantine\\batch-0011.parquet"
+  },
+  "status": "open",
+  "expires_at": null,
+  "run_id": "dev"
+}

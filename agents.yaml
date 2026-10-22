@@ -1,0 +1,79 @@
+# Configuration for Wine Quality MLOps Agents
+run_id: dev
+db_url: sqlite:///board.db
+clock:
+  mode: replay
+  speed: 720  # 1 real second = 12 simulated minutes
+
+llm:
+  provider: groq                  # OpenAI-compatible API (was nvidia_nim)
+  base_url: "https://api.groq.com/openai/v1"
+  model: "qwen/qwen3.8-27b"
+  temperature: 0.0
+  api_key_env: "GROQ_API_KEY"     # the key itself lives in .env (see .env.example), never here
+
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  model_name: "wine-quality"
+
+api:
+  url: "http://localhost:8000"
+  metrics: "http://localhost:8000/metrics"
+
+prometheus:
+  url: "http://localhost:9090"
+
+labels:
+  delay: "1d"
+
+batch_size: 100
+
+features:
+  - "fixed acidity"
+  - "volatile acidity"
+  - "citric acid"
+  - "residual sugar"
+  - "chlorides"
+  - "free sulfur dioxide"
+  - "total sulfur dioxide"
+  - "density"
+  - "pH"
+  - "sulphates"
+  - "alcohol"
+
+units:
+  chlorides: "g/dm3"
+  free_sulfur_dioxide: "mg/dm3"
+  total_sulfur_dioxide: "mg/dm3"
+  density: "g/cm3"
+  sulphates: "g/dm3"
+  alcohol: "% vol"
+
+groups:
+  - alcohol_band
+  - acidity_band
+  - quality_band
+
+agents:
+  reviewer:
+    subscriptions:
+      - "code:*"
+      - "feature:*"
+    thresholds:
+      risk_block_threshold: 0.50
+      skew_ratio_tolerance: 0.05
+
+  checker:                          # P3 Data Checker (agents/checker/INTEGRATION.md section 7)
+    subscriptions:
+      - "dataset:*"
+      - "feature:*"
+      - "expected_change:*"
+    thresholds:
+      psi_warn: 0.10                # drift above the small-batch noise
+      psi_alert: 0.25
+      ks_p_max: 0.05                # a drift must also pass the KS test
+      error_floor: 0.5              # minimum weight of a data error on a model feature
+      decision_min_score: 0.5       # below: finding logged only
+      isolation_min_batches: 10     # normal batches before the Isolation Forest is used
+      compare_last_batches: 5       # query.data_changed: window vs the 5 batches before
+      unit_factors: [10, 0.1, 100, 0.01, 1000, 0.001]

@@ -1,0 +1,6 @@
+{
+  "stage": "build",
+  "error_class": "ResolutionImpossible",
+  "attempts": 3,
+  "log_ref": "logs/setup/sample-failed.log"
+}

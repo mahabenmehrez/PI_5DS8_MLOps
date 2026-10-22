@@ -1,0 +1,14 @@
+artifact_uri: file:C:/Users/mahab/Pi-Mlops/mlruns_local/943112200703484454/f7866d44883a4039be12795c1f61b239/artifacts
+end_time: 1792667214224
+entry_point_name: ''
+experiment_id: '943112200703484454'
+lifecycle_stage: active
+run_id: f7866d44883a4039be12795c1f61b239
+run_name: treasured-newt-741
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792667209320
+status: 3
+tags: []
+user_id: maha
